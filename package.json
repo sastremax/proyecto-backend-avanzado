@@ -8,9 +8,17 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
-  "description": "",
+  "type": "module",
   "dependencies": {
     "express": "^4.21.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sastremax/proyecto-backend-avanzado.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sastremax/proyecto-backend-avanzado/issues"
+  },
+  "homepage": "https://github.com/sastremax/proyecto-backend-avanzado#readme",
+  "description": ""
 }
