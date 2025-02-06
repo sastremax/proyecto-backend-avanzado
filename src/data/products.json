@@ -1,0 +1,46 @@
+[
+  {
+    "id": 1,
+    "title": "Smart Tv Qled 50''",
+    "price": 801099,
+    "description": "Smart TV RCA QL50CH100-F. Este televisor QLED de 50 pulgadas combina calidad de imagen Ultra HD 4K con un diseño moderno y funciones avanzadas. Sumergite en colores vibrantes, contrastes profundos y detalles increíbles gracias a su tecnología HDR10+ y Dolby Vision.",
+    "code": "P001",
+    "status": "available",
+    "stock": 100,
+    "category": "tv",
+    "thumbnails": ["/img/632830-MLA81409765455_122024-F.webp"]
+  },
+  {
+    "id": 2,
+    "title": "Celular Samsung Galaxy A55 5g 256/ 8gb",
+    "price": 799999,
+    "description": "Celular Samsung Galaxy A55 5g 256/ 8gb Tipo de CPU Octa-Núcleo 2,75 GHz, 2 GHz 1080 x 2340 (Full HD+)",
+    "code": "P002",
+    "status": "available",
+    "stock": 50,
+    "category": "phone",
+    "thumbnails": ["/img/794825-MLA80865429208_122024-O.webp"]
+  },
+  {
+    "id": 3,
+    "title": "Heladera LG Side By Side",
+    "price": 17999999,
+    "description": "Heladera LG Side By Side French Door 708 Lts, Con tecnología inverter: Sí, 90.8 cm x 88.6 cm x 177.2 cm",
+    "code": "P003",
+    "status": "available",
+    "stock": 1,
+    "category": "refrigeracion",
+    "thumbnails": ["/img/952866-MLA41478756034_042020-O.webp"]
+  },
+  {
+    "id": 4,
+    "title": "Servidor Hpe Proliant Dl380",
+    "price": 15080800,
+    "description": "Servidor Hpe Proliant Dl380 G11 4416 32gb P60636-b21 Gtia.of, PCIe Gen5 E/S, Con procesadores escalables Intel Xeon de 4.ª y 5.ª generación, con hasta 64 núcleos, 8 TB de memoria, 20 unidades EDSFF",
+    "code": "P004",
+    "status": "available",
+    "stock": 3,
+    "category": "pc",
+    "thumbnails": ["/img/979791-MLA81905562150_012025-F.webp"]
+  }
+]
