@@ -8,7 +8,9 @@
     "status": "available",
     "stock": 100,
     "category": "tv",
-    "thumbnails": ["/img/632830-MLA81409765455_122024-F.webp"]
+    "thumbnails": [
+      "/img/632830-MLA81409765455_122024-F.webp"
+    ]
   },
   {
     "id": 2,
@@ -19,7 +21,9 @@
     "status": "available",
     "stock": 50,
     "category": "phone",
-    "thumbnails": ["/img/794825-MLA80865429208_122024-O.webp"]
+    "thumbnails": [
+      "/img/794825-MLA80865429208_122024-O.webp"
+    ]
   },
   {
     "id": 3,
@@ -30,17 +34,47 @@
     "status": "available",
     "stock": 1,
     "category": "refrigeracion",
-    "thumbnails": ["/img/952866-MLA41478756034_042020-O.webp"]
+    "thumbnails": [
+      "/img/952866-MLA41478756034_042020-O.webp"
+    ]
   },
   {
     "id": 4,
-    "title": "Servidor Hpe Proliant Dl380",
-    "price": 15080800,
-    "description": "Servidor Hpe Proliant Dl380 G11 4416 32gb P60636-b21 Gtia.of, PCIe Gen5 E/S, Con procesadores escalables Intel Xeon de 4.ª y 5.ª generación, con hasta 64 núcleos, 8 TB de memoria, 20 unidades EDSFF",
-    "code": "P004",
+    "title": "Bafle JBL Eon 618s Subwoofer Activo 1000W",
+    "price": 3480000000,
+    "description": "El JBL EON618S es un subwoofer activo de 18 pulgadas diseñado para ofrecer un sonido potente y profundo. Con una potencia de 1000W, este subwoofer es ideal para eventos en vivo, estudios y sistemas de sonido profesional. Su diseño portátil y robusto lo hace fácil de transportar y configurar.",
+    "code": "P005",
     "status": "available",
-    "stock": 3,
-    "category": "pc",
-    "thumbnails": ["/img/979791-MLA81905562150_012025-F.webp"]
+    "stock": 5,
+    "category": "audio",
+    "thumbnails": [
+      "/img/777887-MLA79687001017_102024-F.webp"
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Bafle JBL Eon 618s Subwoofer Activo 1000W",
+    "price": 3380000000,
+    "description": "El JBL EON618S es un subwoofer activo de 18 pulgadas diseñado para ofrecer un sonido potente y profundo. Con una potencia de 1000W, este subwoofer es ideal para eventos en vivo, estudios y sistemas de sonido profesional. Su diseño portátil y robusto lo hace fácil de transportar y configurar.",
+    "code": "P005",
+    "status": "available",
+    "stock": 5,
+    "category": "audio",
+    "thumbnails": [
+      "/img/777887-MLA79687001017_102024-F.webp"
+    ]
+  },
+  {
+    "id": 6,
+    "title": "Midea Unidad Enfriadora Condensación Por Aire 75TR",
+    "price": 107740383.24,
+    "description": "La unidad enfriadora Midea con condensación por aire de 75TR es ideal para grandes sistemas de climatización industrial y comercial. Su diseño eficiente y robusto permite un rendimiento óptimo con bajo consumo energético.",
+    "code": "P006",
+    "status": "available",
+    "stock": 5,
+    "category": "climatizacion",
+    "thumbnails": [
+      "/img/958953-MLA80330593545_102024-O.webp"
+    ]
   }
 ]

@@ -70,7 +70,7 @@ router.put('/:pid', (req, res) => {
     const { title, price, description, code, status, stock, category, thumbnails } = req.body;  // Desestructuro los datos enviados en el body
 
     if (!title || !price || !description || !code || !status || !stock || !category || !thumbnails) {  // si todos los campos no estan 
-        return res.status(400).send('Required fields (title, price, description, code, status, stock, category, thumbnails) are missing');  // arroja un 400
+        return res.status(400).send('Required fields: (title, price, description, code, status, stock, category, thumbnails): someones are missing');  // arroja un 400
     }
 
     const products = readProductsFromFile();  // se leen los productos actuales
