@@ -55,10 +55,10 @@ router.post('/', (req, res) => {
         price,
         description,
         code,
-        status,
+        status: status !== undefined ? status : true,   // si no envio el status queda como verdadero
         stock,
         category,
-        thumbnails
+        thumbnails: thumbnails || [],       // si no envio una imagen queda con un array vacio
     };  // Creo un nuevo producto con los datos recibidos
     products.push(newProduct);   // Agrego el nuevo producto al arreglo de productos
     writeProductsToFile(products); // escribo los productos actualizados en el archivo JSON
