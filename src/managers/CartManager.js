@@ -35,17 +35,62 @@ class CartManager {
 
     // creo un nuevo carrito
     createCart() {
+        const carts = this.readCarts(); // leo los carritos
+        const newCart = {
+            id: carts.length > 0 ? Math.max(...carts.map(c => c.id)) + 1 : 1, // genero un id unico para el nuevo carrito
+            products: [] // inicializo el carrito con un array vacio de productos
+        }
 
+        carts.push(newCart); // agrego el nuevo carrito a la lista de carritos
+        this.writeCarts(carts); // escribo los carritos actualizados en el archivo json
+        return newCart; // retorno el carrito creado
     }
 
     // agrego un producto a un carrito
     addProductToCart(cartId, productId, quantity = 1) {
+        const carts = this.readCarts(); // leo los carritos
+        const cart = carts.find(c => c.id === Number(cartId)); // busco el carrito por id
 
+        if (!cart) return null; // si el carrito no existe, retorno null
+
+        const productIndex = cart.products.findIndex(p => p.productId === Number(productId)); // busco el producto en el carrito
+        if (productIndex === -1) {
+            cart.products.push({ productId: Number(productId), quantity }); // si no existe, lo agrego con la cantidad especificada
+        } else {
+            cart.products[productIndex].quantity += quantity; // si ya existe, incremento la cantidad
+        }
+
+        this.writeCarts(carts); // escribo los carritos actualizados en el archivo json
+        return cart; // retorno el carrito actualizado
     }
 
     // elimino un carrito
     deleteCart(id) {
+        const carts = this.readCarts(); // leo los carritos
+        const cartIndex = carts.findIndex(c => c.id === Number(id)); // busco el carrito por id
 
+        if (cartIndex === -1) return false; // si el carrito no existe, retorno false
+
+        carts.splice(cartIndex, 1); // elimino el carrito del array de carritos
+        this.writeCarts(carts); // escribo los carritos actualizados en el archivo json
+        return true; // retorno true para indicar que el carrito fue eliminado
+    }
+
+    // eliminar un producto de un carrito
+    removeProductFromCart(cartId, productId) {
+        const carts = this.readCarts(); // leo los carritos del archivo json
+        const cartIndex = carts.findIndex(c => c.id === Number(cartId)); // busco el carrito por id
+
+        if (cartIndex === -1) return null   // si no exite retorno null
+
+        const productIndex = carts[cartIndex].products.findIndex(p => p.productId === Number(productId)); // busco el producto en el carrito
+
+        if (productIndex === -1) return null    // si no exite retorno null
+
+        carts[cartIndex].products.splice(productIndex, 1); // elimino el producto del carrito
+        this.writeCarts(carts); // guardo los cambios en el archivo json
+
+        return carts[cartIndex]; // retorno el carrito actualizado
     }
 }
 
