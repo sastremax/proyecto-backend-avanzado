@@ -46,11 +46,11 @@ router.post('/:cid/product/:pid', (req, res) => {
 router.delete('/:cid/product/:pid', (req, res) => {
     const updatedCart = cartManager.removeProductFromCart(req.params.cid, req.params.pid); // llamo a la funcion para eliminar el producto del carrito
 
-    if (!updatecart) {                                             // si no lo encuentro
+    if (!updatedCart) {                                             // si no lo encuentro
         return res.status(404).send('Cart not found');     // da un resultado 404
     }
     // si lo encuentro
-    res.json(updatedCart); // envio el carrito actualizado
+    return res.status(204).send('No Content'); // envio el carrito actualizado da un resultado 204
 });
 
 // eliminar un carrito
@@ -61,7 +61,7 @@ router.delete('/:cid', (req, res) => {
         return res.status(404).send('Cart not found');    // da un resultado 404
     }
     // si lo encuentro    
-    res.status(204).send();          // da un resultado 204
+    res.status(204).send('No Content');          // da un resultado 204
 });
 
 export default router;  // exporto el router para que se pueda usar en el archivo principal
