@@ -1,11 +1,73 @@
 import express from 'express';
 import ProductManager from '../managers/ProductManager.js';
+import upload from '../middlewares/multer.js';
 
 // creo una instancia del router
 const router = express.Router();
 
 // creo una instancia de ProductManager
 const productManager = new ProductManager();
+
+// Middleware a nivel de router
+router.use((req, res, next) => {
+    console.log(`Log de productos: ${req.method} ${req.path} - ${new Date().toISOString()}`);
+    next();   // paso al siguiente middleware
+});
+
+// Middleware de validación para productos (POST y PUT)
+function validateProduct(req, res, next) {
+    const { title, price, description, code, stock, category } = req.body;
+    if (!title || !price || !description || !code || !stock || !category) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+    next();
+}
+
+// Middleware de timestamp (añade fecha y hora a la solicitud)
+function addTimestamp(req, res, next) {
+    req.timestamp = new Date().toISOString();
+    next();
+}
+
+//  endpoint para subir una imagen MULTER
+router.post('/upload/:pid', upload.single('image'), (req, res) => {
+    const { pid } = req.params; // Obtengo el ID del producto
+
+    // Si no se sube ningún archivo, retorno un error
+    if (!req.file) {
+        return res.status(400).json({ error: 'No image uploaded' });
+    }
+
+    // busco el producto por ID
+    const product = productManager.getProductById(pid);
+    if (!product) {
+        return res.status(404).json({ error: 'Product not found' });
+    }
+
+    // agrego la imagen al array thumbails
+    const imagePath = `/img/${req.file.filename}`; // Ruta donde se guardó la imagen
+    if (!product.thumbnails) {
+        product.thumbnails = []; // Si no existe, inicializo el array
+    }
+    product.thumbnails.push(imagePath); // Agrego la nueva imagen
+
+    // guardo el producto actualizado
+    productManager.updateProduct(pid, product);
+
+    // Si la imagen se sube correctamente, retorno un mensaje con el nombre del archivo
+    res.json({ message: 'Image uploaded and added to product', product });
+});
+
+// enpoint para subir multiples imagenes MULTER
+router.post('/uploadMultiple', upload.array('images', 5), (req, res) => {
+    if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ error: 'No images uploaded' });
+    }
+    res.json({
+        message: 'Images uploaded successfully',
+        filenames: req.files.map(file => file.filename),
+    });
+});
 
 // obtengo todos los productos
 router.get('/', (req, res) => {
