@@ -2,19 +2,17 @@ import express from 'express';  // importo express
 import productsRouter from './routes/products.js';   // importo el router del producto
 import cartsRouter from './routes/carts.js';   // importo el router del carrito
 import path from 'path';  // importo path para trabajar con las rutas de los directorios
-import { fileURLToPath } from 'url';  // importo fileURLToPath para manejar __dirname con ESM
 import logger from './middlewares/logger.js';   // Importo el middleware
 import errorHandler from './middlewares/errorHandler.js';   // Importo el middleware de manejo de errores
+import __dirname from './utils.js';    // Importo __dirname desde utils.js
 
 // hay que inicializar
 const app = express(); // a partir de aqui app tendra todas las funcionalidades de express
 
 const PORT = 8080;  // puerto 8080
 
-const __filename = fileURLToPath(import.meta.url);  // es para obtener la ruta del archivoa actual
-const __dirname = path.dirname(__filename);  // para obetener el directorio del archivo
-
-app.use(express.static(path.join(__dirname, 'public')));  // para acceder a los archivo estaticos de public
+// para acceder a los archivo estaticos de public
+app.use(express.static(path.join(__dirname, 'public')));  
 
 // middleware para analizar datos en formato JSON y urlencoded
 app.use(express.json());
