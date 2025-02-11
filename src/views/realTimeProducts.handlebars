@@ -1,0 +1,25 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Real Time Products</title>
+  </head>
+  <body>
+    <h1>Real-Time Products</h1>
+    <ul id="productList">
+      {{#each products}}
+        <li id="product-{{this.id}}">
+          <strong>{{this.title}}</strong>
+          - ${{this.price}}
+          <br />
+          <p>{{this.description}}</p>
+          <button onclick="deleteProduct({{this.id}})">Delete</button>
+        </li>
+      {{/each}}
+    </ul>
+    <script>
+      function deleteProduct(productId) { alert('Delete product with ID: ' +
+      productId); }
+    </script>
+  </body>
+</html>

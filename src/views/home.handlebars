@@ -1,0 +1,45 @@
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product List</title>
+  </head>
+  <body>
+    <h1>Products</h1>
+    <ul>
+      {{#each products}}
+        <li>
+          <strong>Title:</strong>
+          {{this.title}}
+          <br />
+          <!-- Título del producto -->
+          <strong>Description:</strong>
+          {{this.description}}
+          <br />
+          <!-- Descripción del producto -->
+          <strong>Price:</strong>
+          ${{this.price}}
+          <br />
+          <!-- Precio del producto -->
+          <strong>Stock:</strong>
+          {{this.stock}}
+          units
+          <br />
+          <!-- Stock disponible -->
+          <strong>Category:</strong>
+          {{this.category}}
+          <br />
+          <!-- Categoría del producto -->
+          <strong>Images:</strong>
+          <ul>
+            {{#each this.thumbnails}}
+              <!-- recorro las imagenes del producto -->
+              <li><img src="{{this}}" alt="Product image" width="100" /></li>
+              <!-- muestro cada imagen -->
+            {{/each}}
+          </ul>
+        </li>
+      {{/each}}
+    </ul>
+  </body>
+</html>
