@@ -27,8 +27,8 @@ escuchamos conexiones
 
 let messages = []; //Los mensajes se almacenarán aquí
 
-io.on('connection', Socket => {
-    console.log(`Nuevo cliente conectado: ${Socket.id}`);
+io.on('connection', socket => {
+    console.log(`Nuevo cliente conectado: ${socket.id}`);
 
     socket.on('userAuthenticated', user => {
         //Emitir los logs del chat al usuario que se acaba de autenticar
