@@ -70,7 +70,13 @@ io.on('connection', (socket) => {
 
     // escucho el evento 'addProduct' y emitimos el nuevo producto a todos los clientes
     socket.on('addProduct', (product) => {
-        io.emit('newProduct', product);  // aqui emitimos el nuevo producto a todos los clientes
+        io.emit('newProduct', {
+            title: product.title,
+            price: product.price,
+            description: product.description,
+            stock: product.stock,
+            category: product.category 
+        }); 
     });
 
     // escucho el evento 'deleteProduct' y emitimos la eliminacion del producto a todos los clientes

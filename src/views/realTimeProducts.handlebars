@@ -14,6 +14,9 @@
           - ${{this.price}}
           <br />
           <p>{{this.description}}</p>
+          <span>Stock: {{this.stock}}</span>
+          <br />
+          <span>Category: {{this.category}}</span>
           <button onclick="deleteProduct({{this.id}})">Delete</button>
         </li>
       {{/each}}
