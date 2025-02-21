@@ -7,14 +7,21 @@ import errorHandler from './middlewares/errorHandler.js';   // Importo el middle
 import __dirname from './utils.js';    // Importo __dirname desde utils.js
 import { engine } from 'express-handlebars'; // importo el motor de plantillas handlebarsa
 import fs from 'fs';  // importo fs para leer archivos
+import http from 'http';  // para crear el servidor HTTP
+import { Server as SocketIOServer } from 'socket.io'; // para la conexion de WEBSOCKET
 
 // hay que inicializar
 const app = express(); // a partir de aqui app tendra todas las funcionalidades de express
+
+const server = http.createServer(app);   // creo el servidor http con express
+const io = new SocketIOServer(server);  // creo la conexion de socket.io con el servidor http
 
 const PORT = 8080;  // puerto 8080
 
 // Configuración de Handlebars
 app.engine('handlebars', engine());
+
+app.set('views', path.join(__dirname, 'views'));  // para que express sepa donde estan las vistas
 app.set('view engine', 'handlebars');  // handlebar se la establece como un motor de plantillas
 
 // para acceder a los archivo estaticos de public
@@ -39,6 +46,12 @@ app.get('/products', (req, res) => {   // ruta para mostrar los productos
     });
 });
 
+// Ruta para agregar un producto (en el backend)
+app.post('/api/products', (req, res) => {
+    const { title, price, description, stock, category, image } = req.body;
+    res.redirect('/products');
+});
+
 app.get('/realtimeproducts', (req, res) => {   // ruta para mostrar los productos en tiempo real
     fs.readFile(path.join(__dirname, 'data', 'products.json'), 'utf-8', (err, data) => {  // leo el archivo 'products.json' de la carpeta 'data'
         if (err) {
@@ -48,6 +61,26 @@ app.get('/realtimeproducts', (req, res) => {   // ruta para mostrar los producto
         const products = JSON.parse(data);   // parseo el contenido de JSON
 
         res.render('realTimeProducts', { products });   // renderizo realtimeproducts a la vista y paso los productos
+    });
+});
+
+// configuracion de websockets con socket.io
+io.on('connection', (socket) => {
+    console.log('A user connected');   // confirmo que un usuario se ha conectado
+
+    // escucho el evento 'addProduct' y emitimos el nuevo producto a todos los clientes
+    socket.on('addProduct', (product) => {
+        io.emit('newProduct', product);  // aqui emitimos el nuevo producto a todos los clientes
+    });
+
+    // escucho el evento 'deleteProduct' y emitimos la eliminacion del producto a todos los clientes
+    socket.on('deleteProduct', (productId) => {
+        io.emit('deleteProduct', productId);  // aqui emitimos la eliminacion del producto a todos los clientes
+    });
+
+    // descnoectamos
+    socket.on('disconnect', () => {
+        console.log('A user disconnected');   // cuando un usuario se desconecta
     });
 });
 
@@ -68,6 +101,6 @@ app.use((req, res, next) => {
 app.use(errorHandler);
 
 //  inicio el servidor
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);  // mensaje de escucha del puerto
 });

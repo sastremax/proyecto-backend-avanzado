@@ -3,9 +3,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Real Time Products</title>
+    <link rel="stylesheet" href="css/index.css">
   </head>
   <body>
-    <h1>Real-Time Products</h1>
+    <h2>Real-Time Products</h2>
     <ul id="productList">
       {{#each products}}
         <li id="product-{{this.id}}">
@@ -17,9 +18,55 @@
         </li>
       {{/each}}
     </ul>
+
+    <!-- Formulario para agregar productos -->
+    <form id="addProductForm">
+      <input type="text" id="title" placeholder="Product Title" required>
+      <input type="number" id="price" placeholder="Price" required>
+      <input type="text" id="description" placeholder="Description" required>
+      <input type="number" id="stock" name="stock" placeholder="Stock" required />
+      <input type="text" id="category" name="category" placeholder="Category" required />
+      <input type="file" id="image" name="image" placeholder="Product Image" required />
+      <button type="submit">Add Product</button>
+    </form>
+
     <script>
-      function deleteProduct(productId) { alert('Delete product with ID: ' +
-      productId); }
+      const socket = io(); // Conexión a WebSocket
+
+      // escuchamos eventos newproduct cuando se recibe el nuevo producto
+      socket.on('newProduct', (product) => {
+        const productList = document.getElementById('productList');   // Obtengo la lista de productos
+        const productItem = document.createElement('li');   // Creo un nuevo elemento de lista
+        productItem.id = `product-${product.id}`;      // Establezco el id del producto
+        productItem.innerHTML = `${product.title} - $${product.price} <button onclick="deleteProduct(${product.id})">Delete</button>`; // Agrego el titulo, precio y el boton de eliminar al producto
+        productList.appendChild(productItem);    // Añado el producto a la lista
+      });
+
+      // escuchamos los enventos de los productos eliminados
+      socket.on('deleteProduct', (productId) => {
+        const productItem = document.getElementById(`product-${productId}`);    // busco el producto en la lista usando el id
+        if (productItem) {   
+          productItem.remove();   // si el producto existe entonces lo elimino de la lista
+        }
+      });
+
+       // Función para agregar un producto cuando se envie el formulario
+      document.getElementById('addProductForm').addEventListener('submit', (e) => {
+        e.preventDefault();    // evito que el producto se envie de manera tradicional
+        const title = document.getElementById('title').value;  // obtengo el titulo del producto
+        const price = document.getElementById('price').value;  // obtengo el precio del producto
+        const description = document.getElementById('description').value;  // obtengo la descripcion del producto
+        const stock = document.getElementById('stock').value;   // obtengo el stock del producto
+        const category = document.getElementById('category').value;  // obtengo la categoria del porducto
+        const image = document.getElementById('image').files[0];  // obtengo la imagen del producto
+        socket.emit('addProduct', { title, price, description, stock, category, image });  // envio el producto al servidor
+      });
+
+    
+      // funcion para eliminar un producto
+      function deleteProduct(productId) {
+        socket.emit('deleteProduct', productId);  // emito un evento de eliminacion del producto
+      }
     </script>
   </body>
 </html>
