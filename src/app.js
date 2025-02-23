@@ -48,8 +48,48 @@ app.get('/products', (req, res) => {   // ruta para mostrar los productos
 
 // Ruta para agregar un producto (en el backend)
 app.post('/api/products', (req, res) => {
-    const { title, price, description, stock, category, image } = req.body;
-    res.redirect('/products');
+    const { title, price, description, code, stock, category, thumbnails } = req.body;
+
+    if (!title || !price || !description || !stock || !category) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const newCode = code || 'P' + Date.now();  // genero un codigo unico si no se genera
+    console.log('thumbnails from request:', thumbnails);
+    const newThumbnails = thumbnails || [];   // si no se proporcionan thumbnails se asigna un array vacio
+
+    // leo el archivo de productos
+    fs.readFile(path.join(__dirname, 'data', 'products.json'), 'utf-8', (err, data) => {
+        if (err) {
+            return res.status(500).json({ error: 'Error al leer los productos' });
+        }
+
+        const products = JSON.parse(data);
+        const newId = products.length ? Math.max(...products.map(p => p.id)) + 1 : 1;      // si no hay productos el id comienza en 1
+        const newProduct = {
+            id: newId,
+            title,
+            price: parseFloat(price),
+            description,
+            code: newCode,
+            stock,
+            category,
+            thumbnails: newThumbnails,
+        };    // nuevo producto con id
+
+        products.push(newProduct);   // agrego el producto nuevo
+
+        // guardo el archivo de productos
+        fs.writeFile(path.join(__dirname, 'data', 'products.json'), JSON.stringify(products, null, 2), (err) => {
+            if (err) {
+                return res.status(500).json({ error: 'Error al guardar el producto' });   // en caso de error devuelve un 500
+            }
+
+            console.log('¡Producto agregado con exito');
+            io.emit('newProduct', newProduct);   // emito el producto nuevo pero ahora a todos los clientes conectados
+            res.status(201).json(newProduct);   // retorno un 201
+        });
+    });   
 });
 
 app.get('/realtimeproducts', (req, res) => {   // ruta para mostrar los productos en tiempo real
@@ -70,13 +110,10 @@ io.on('connection', (socket) => {
 
     // escucho el evento 'addProduct' y emitimos el nuevo producto a todos los clientes
     socket.on('addProduct', (product) => {
-        io.emit('newProduct', {
-            title: product.title,
-            price: product.price,
-            description: product.description,
-            stock: product.stock,
-            category: product.category 
-        }); 
+        const { title, price, description, stock, category } = product; // sin imagen
+        const newProduct = { title, price, description, stock, category };
+        console.log('Emitiendo producto:', newProduct);
+        io.emit('newProduct', newProduct);  // solo notifico el nuevo producto sin la imagen      
     });
 
     // escucho el evento 'deleteProduct' y emitimos la eliminacion del producto a todos los clientes
