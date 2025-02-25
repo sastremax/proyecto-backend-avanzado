@@ -1,12 +1,15 @@
-import express from 'express';
-const router = express.Router();
+import { Router } from 'express';
+import { userModel } from './models/user.model.js';
 
-router.get('/', (req, res) => {
-    res.send('Lista de usuarios');
-});
+const router = Router();
 
-router.post('/', (req, res) => {
-    res.send('Crear un nuevo usuario');
+router.get('/', async (req, res) => {
+    try {
+        let user = await userModel.find();  // es un find identico en cliente cli
+        res.send({result: "success", payload: users})
+    } catch (error) {
+        console.log('Cannot get users with mongoose: '+error)
+    }
 });
 
 export default router;
