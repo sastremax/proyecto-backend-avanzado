@@ -11,7 +11,7 @@ app.use(express.json());
 const connectToDatabase = async () => {
     try {
         // Usa las credenciales importadas en la cadena de conexión
-        const uri = `mongodb+srv://${usuario}:${contraseña}@clustercoder.69ocy.mongodb.net/?retryWrites=true&w=majority&appName=ClusterCoder`;
+        const uri = `mongodb+srv://${usuario}:${contraseña}@clustercoder.69ocy.mongodb.net/estudiantes?retryWrites=true&w=majority`;
         await mongoose.connect(uri);
         console.log("Conexión exitosa a MongoDB Atlas!");
 
@@ -28,4 +28,4 @@ const connectToDatabase = async () => {
 connectToDatabase();
 
 // Usar el router para las rutas de usuario
-app.use('/api/user', userRouter);
+app.use('/api/user', userRouter); 

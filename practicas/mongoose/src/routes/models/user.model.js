@@ -1,22 +1,20 @@
 import mongoose from "mongoose";
 
-const userCollection = "usuarios"; // se llamara la colleccion de la base de datos
+// Definimos la colección de la base de datos
+const userCollection = "alumnos"; // colección en la base de datos 'estudiantes'
 
-const userSchema = new mongoose.Schema({
-    // seteo las propiedades que queremos que un usuario tenga en la aplicacion
-    first_name: {
+const alumnoSchema = new mongoose.Schema({
+    // seteo las propiedades que queremos que un usuario tenga en la aplicación
+    nombre: {
         type: String,
         required: true,
     },
-    last_name: String,
-    email: {       // si quiero usar mas detalles usamos las llaves
-        type:String,   
-        unique:true                // email unico
-    }
-})
+    edad: String,
+    genero: String,
+    curso: String,
+});
 
-/* 
-Con mongoose.model genero el modelo funcional de un usuario
-conectandose a la BD
-*/
-export const userModel = mongoose.model(userCollection, userSchema);
+// Con mongoose.model genero el modelo funcional de un usuario
+// El primer parámetro es el nombre del modelo (usamos 'Alumno' como nombre) 
+// y el segundo parámetro es el esquema
+export const alumnoModel = mongoose.model('Alumno', alumnoSchema, userCollection);

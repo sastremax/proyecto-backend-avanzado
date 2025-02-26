@@ -5,10 +5,12 @@ const router = Router();
 
 router.get('/', async (req, res) => {
     try {
-        let user = await userModel.find();  // es un find identico en cliente cli
-        res.send({result: "success", payload: users})
+        // Buscar todos los documentos en la colección 'alumnos'
+        let users = await alumnoModel.find();
+        res.send({ result: "success", payload: users });
     } catch (error) {
-        console.log('Cannot get users with mongoose: '+error)
+        console.log('Cannot get users with mongoose: ' + error);
+        res.status(500).send({ result: "error", message: "Unable to fetch users" });
     }
 });
 
