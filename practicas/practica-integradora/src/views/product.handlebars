@@ -1,0 +1,12 @@
+<div class="product-container">
+    <h2>{{product.cod}} - {{product.name}}</h2>
+    {{#if product.thumbnail}}
+        <img src="/img/{{product.thumbnail}}" alt="Imagen del producto">
+    {{else}}
+        <p>No image available</p>
+    {{/if}}
+    
+    <p>Price: ${{product.price}}</p>
+    <p>Description: {{product.description}}</p>
+    <p>Ruta del archivo: {{product.thumbnail}}</p>
+</div>
