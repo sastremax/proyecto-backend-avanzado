@@ -1,6 +1,6 @@
 // operaciones CRUD pero devuelvo respuestas con vistas renderizadas
-import { router } from 'express';
-import ProductModel from '../models/product.model';
+import { Router } from 'express';
+import ProductModel from '../models/product.model.js';
 
 const router = Router();
 
@@ -8,14 +8,15 @@ const router = Router();
 router.post('/', async (req, res) => {
     try {
         const newProduct = new ProductModel(req.body);
-        console.log('info del body')
+        console.log('info of body', req.body)
 
-        await newProduct.save();
-        res.json({newProduct});
+        await newProduct.save();  //  guardo el producto en MongoDB
+        res.json({ status: "success", product: newProduct });
     } catch (error) {
-        return res.send({ mesagge})
+        console.error('Error when you create a product', error);
+        return res.status(500).json({ mesagge: 'Error when you create a product' });
     }
-})
+});
 
 // R Read
 router.get('/:cod', async (req, res) => {
@@ -29,6 +30,16 @@ router.get('/:cod', async (req, res) => {
         return res.send({ message: "error" });
     }
 });
+
+router.get('/', async (req, res) => {
+    try {
+        let products = await ProductModel.find();
+        products = products.map(product => product.toObject());
+        res.render('products', { products: products });
+    } catch (error) {
+        return res.render('error', { error: "Error al obtener todos los productos" })
+    }
+})
 
 // U Update
 
