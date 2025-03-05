@@ -2,10 +2,13 @@ import mongoose from 'mongoose';
 import { MONGO_URI } from './config.js';
 import userModel from './models/users.js';
 
-const enviroment = async() => {
-    await mongoose.connect(MONGO_URI)
+dotenv.config();
 
-    const response = await userModel.find().explain('executionStats');
+const enviroment = async() => {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log('conected');
+
+    const response = await userModel.find({ first_name: "Celia" }).explain('executionStats');
     console.log(response);
 };
 
