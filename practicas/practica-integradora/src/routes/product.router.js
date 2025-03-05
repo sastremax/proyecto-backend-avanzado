@@ -1,12 +1,16 @@
 // operaciones CRUD pero devuelvo respuestas con vistas renderizadas
 import { Router } from 'express';
 import ProductModel from '../models/product.model.js';
+import { uploader } from '../utilsMulter.js';
 
 const router = Router();
 
 // C Create
-router.post('/', async (req, res) => {
+router.post('/', uploader.single('file'), async (req, res) => {
     try {
+        console.log('Datos recibidos:', req.body);
+        console.log('Archivo recibido:', req.file);
+        
         const newProduct = new ProductModel(req.body);
         console.log('info of body', req.body)
         if (req.file) {
@@ -48,7 +52,25 @@ router.get('/', async (req, res) => {
 })
 
 // U Update
+router.put('/:pid', async (req, res) => {
+    try {
+        const { pid } = req.params; // Extraigo el ID del producto desde la URL
+        const updateData = req.body; // Capturo el body con los datos actualizados
 
+        const updatedProduct = await ProductModel.findByIdAndUpdate(pid, updateData, { new: true });
+
+        if (!updatedProduct) {
+            // Si el producto no existe, devuelvo la vista de error
+            return res.render('error', { error: "Product not found when updating" });
+        }
+
+        // Si el producto se actualizó correctamente, redirijo al listado general
+        res.redirect('/product');
+    } catch (error) {
+        console.error('Error updating product:', error);
+        return res.render('error', { error: "Error updating product" });
+    }
+});
 
 // D Delete
 router.delete('/:pid', async (req, res) => {

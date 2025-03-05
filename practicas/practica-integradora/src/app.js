@@ -13,7 +13,7 @@ const app = express();  // inicializo la constante app para usar express
 
 // configuro el servidor
 app.use(express.json());
-app.use(express.urlencoded({ extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 //inicializo mi motor de plantillas y lo configuro
 app.engine('handlebars', handlebars.engine());
