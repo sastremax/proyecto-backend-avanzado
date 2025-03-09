@@ -28,27 +28,12 @@ const environment = async () => {
         await mongoose.connect(MONGO_URI);
         console.log('conected');
 
-        // Busco al estudiante por su ID
-        let student = await Student.findById("67ccfddebbc1d55c0b6f3694");
+        // Busco al estudiante
+        let students = await Student.find().populate('courses.course');
 
-        if (!student) {
-            console.log('Estudiante no encontrado');
-            return;
-        }
+        console.log('Estudiantes con cursos:', JSON.stringify(students, null, 2));
 
-        console.log('Estudiante encontrado:', student);
-
-        // Agrego el curso al array de courses
-        student.courses.push({ course: "67ccec98a7090c2f79d79fa3" });
-        student.courses.push({
-            course: "67ccec8da7090c2f79d79fa2"
-            });
-
-        // Guardo los cambios en la base de datos
-        await student.save();
-
-        console.log('Curso agregado correctamente');
-
+       
         /*
 
  // Estoy buscando los estudiantes ordenados por edad descendente
