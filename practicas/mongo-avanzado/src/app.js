@@ -27,6 +27,20 @@ const environment = async () => {
         await mongoose.connect(MONGO_URI);
         console.log('conected');
 
+
+        // Estoy buscando los estudiantes ordenados por edad descendente
+        const studentsSorted = await Student.find().sort({ age: -1 });
+        console.log("Mostré los estudiantes ordenados por edad descendente:", studentsSorted);
+
+        // Estoy buscando los primeros 5 tickets
+        const ticketsLimited = await Ticket.find().limit(5);
+        console.log("Mostré los primeros 5 tickets:", ticketsLimited);
+
+        // Estoy buscando los 3 libros con mejor calificación
+        const booksTopRated = await Book.find().sort({ rating: -1 }).limit(3);
+        console.log("Mostré los 3 libros con mejor calificación:", booksTopRated);
+
+        /*
         // Estoy buscando estudiantes con edad mayor o igual a 20 y nota mayor o igual a 8
         const studentsAnd = await Student.find({
             $and: [
@@ -68,7 +82,7 @@ const environment = async () => {
         // Estoy buscando libros que tienen rating
         const booksExists = await Book.find({ rating: { $exists: true } });
         console.log("Mostré los libros que tienen rating:", booksExists);
-        /*
+        
         // estoy creando nuevas consultas usando findOne()
         // estoy buscando un estudiante de nombre Pedro
         const studentData = await Student.findOne({ first_name: "Pedro" });
