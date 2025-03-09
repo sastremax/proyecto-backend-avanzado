@@ -8,6 +8,7 @@ import Student from './models/students.js';
 import Ticket from './models/tickets.js';
 import DeliveryUser from './models/deliveryUsers.js';
 import Book from './models/books.js';
+import Course from './models/course.model.js';
 
 dotenv.config();
 console.log(' MONGO_URI:', MONGO_URI);
@@ -27,8 +28,30 @@ const environment = async () => {
         await mongoose.connect(MONGO_URI);
         console.log('conected');
 
+        // Busco al estudiante por su ID
+        let student = await Student.findById("67ccfddebbc1d55c0b6f3694");
 
-        // Estoy buscando los estudiantes ordenados por edad descendente
+        if (!student) {
+            console.log('Estudiante no encontrado');
+            return;
+        }
+
+        console.log('Estudiante encontrado:', student);
+
+        // Agrego el curso al array de courses
+        student.courses.push({ course: "67ccec98a7090c2f79d79fa3" });
+        student.courses.push({
+            course: "67ccec8da7090c2f79d79fa2"
+            });
+
+        // Guardo los cambios en la base de datos
+        await student.save();
+
+        console.log('Curso agregado correctamente');
+
+        /*
+
+ // Estoy buscando los estudiantes ordenados por edad descendente
         const studentsSorted = await Student.find().sort({ age: -1 });
         console.log("Mostré los estudiantes ordenados por edad descendente:", studentsSorted);
 
@@ -40,7 +63,6 @@ const environment = async () => {
         const booksTopRated = await Book.find().sort({ rating: -1 }).limit(3);
         console.log("Mostré los 3 libros con mejor calificación:", booksTopRated);
 
-        /*
         // Estoy buscando estudiantes con edad mayor o igual a 20 y nota mayor o igual a 8
         const studentsAnd = await Student.find({
             $and: [

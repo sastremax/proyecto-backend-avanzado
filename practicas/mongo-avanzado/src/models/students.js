@@ -8,9 +8,20 @@ const studentSchema = new mongoose.Schema({
     age: Number,
     grade: { type: Number, index: true },
     gender: String,
-    address: String
+    address: String,
+    courses: { 
+        type: [
+            { 
+                course: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "courses" 
+                }
+            }
+        ], 
+    default: []
+    }
 });
 
-const Student = mongoose.model('Student', studentSchema);
+const Student = mongoose.model('students', studentSchema);
 export default Student;
 
