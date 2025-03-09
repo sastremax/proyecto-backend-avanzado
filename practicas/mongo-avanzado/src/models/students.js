@@ -22,6 +22,12 @@ const studentSchema = new mongoose.Schema({
     }
 });
 
+// Middleware "pre" para hacer populate() automaticamente
+studentSchema.pre('find', function (next) {
+    this.populate('courses.course');   // Popula automáticamente la referencia a los cursos
+    next();
+});
+
 const Student = mongoose.model('students', studentSchema);
 export default Student;
 

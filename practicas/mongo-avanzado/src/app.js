@@ -28,12 +28,10 @@ const environment = async () => {
         await mongoose.connect(MONGO_URI);
         console.log('conected');
 
-        // Busco al estudiante
-        let students = await Student.find().populate('courses.course');
+        const students = await Student.find();
+        console.log('Lista de estudiantes con cursos:', JSON.stringify(students, null, 2));
 
-        console.log('Estudiantes con cursos:', JSON.stringify(students, null, 2));
-
-       
+        
         /*
 
  // Estoy buscando los estudiantes ordenados por edad descendente
