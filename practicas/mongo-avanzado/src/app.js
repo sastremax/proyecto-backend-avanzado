@@ -45,6 +45,29 @@ const environment = async () => {
         });
         console.log("Mostré los estudiantes llamados Juan o con nota mayor o igual a 9:", studentsOr);
 
+        const studentOr = await Student.find({
+            $or: [
+                { last_name: "Perez" },
+                { age: { $gte: 21} }
+            ]
+        });
+        console.log("Mostré los estudiantes con apellido Perez o con edad mayor a 21:", studentOr);
+
+        // Estoy buscando estudiantes con edad mayor o igual a 22
+        const studentsGte = await Student.find({ age: { $gte: 22 } });
+        console.log("Mostré los estudiantes con edad mayor o igual a 22:", studentsGte);
+
+        // Estoy buscando tickets con monto menor o igual a 200
+        const ticketsLte = await Ticket.find({ total_amount: { $lte: 200 } });
+        console.log("Mostré los tickets con monto menor o igual a 200:", ticketsLte);
+
+        // Estoy buscando usuarios de delivery en los códigos postales 1401 o 1402
+        const usersIn = await DeliveryUser.find({ postal_code: { $in: ["1401", "1402"] } });
+        console.log("Mostré los usuarios de delivery con código postal 1401 o 1402:", usersIn);
+
+        // Estoy buscando libros que tienen rating
+        const booksExists = await Book.find({ rating: { $exists: true } });
+        console.log("Mostré los libros que tienen rating:", booksExists);
         /*
         // estoy creando nuevas consultas usando findOne()
         // estoy buscando un estudiante de nombre Pedro
