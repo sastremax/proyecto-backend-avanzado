@@ -27,7 +27,27 @@ const environment = async () => {
         await mongoose.connect(MONGO_URI);
         console.log('conected');
 
+        // Estoy buscando estudiantes con edad mayor o igual a 20 y nota mayor o igual a 8
+        const studentsAnd = await Student.find({
+            $and: [
+                { age: { $gte: 20 } },
+                { grade: { $gte: 8 } }
+            ]
+        });
+        console.log("Mostré los estudiantes con edad mayor o igual a 20 y nota mayor o igual a 8:", studentsAnd);
+
+        // Estoy buscando estudiantes llamados Juan o con nota mayor o igual a 9
+        const studentsOr = await Student.find({
+            $or: [
+                { first_name: "Juan" },
+                { grade: { $gte: 9 } }
+            ]
+        });
+        console.log("Mostré los estudiantes llamados Juan o con nota mayor o igual a 9:", studentsOr);
+
+        /*
         // estoy creando nuevas consultas usando findOne()
+        // estoy buscando un estudiante de nombre Pedro
         const studentData = await Student.findOne({ first_name: "Pedro" });
         console.log('muestro los datos del estudiante:', studentData);
 
@@ -43,8 +63,6 @@ const environment = async () => {
         const bookData = await Book.findOne({ title: 'MongoDB Essentials' });
         console.log('mostre los datos de un libro:', bookData);
 
-
-        /*
         estoy dejando el código con find() comentado para pruebas futuras
         const studentStats = await Student.find({ first_name: "Juan" }).explain('executionStats');
         console.log('Mostré las estadísticas de consulta de estudiantes', studentStats);
