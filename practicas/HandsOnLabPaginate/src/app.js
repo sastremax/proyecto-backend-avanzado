@@ -9,7 +9,11 @@ dotenv.config()
 
 const app = express();
 
-mongoose.connect(process.env.MONGO_URI);
+const MONGO_URI = process.env.MONGO_URI;
+mongoose.connect(MONGO_URI)
+    .then(() => console.log("Conectado a MongoDB"))
+    .catch(err => console.error("Error en conexión a MongoDB:", err));
+
 
 app.engine('handlebars',handlebars.engine());
 app.set('views',__dirname+'/views')
