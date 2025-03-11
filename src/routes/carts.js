@@ -15,7 +15,7 @@ router.get('/:id', cartController.getCartById);
 router.post('/seed', cartController.seedCarts);
 
 // agrego un carrito desde mongodb
-
+router.post('/:id/products/:productId', cartController.addProductToCart);
 
 // modifico un carrito desde mongodb
 

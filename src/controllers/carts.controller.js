@@ -60,4 +60,40 @@ const getCartById = async (req, res) => {
     }
 }
 
-export default { getCartById, seedCarts };
+// agrego un producto a un carrito en la base de datos
+const addProductToCart = async (req, res) => {
+    try {
+        const { id, productId } = req.params;
+
+        // busco el carrito en la base de datos
+        const cart = await Cart.findById(id);
+        if (!cart) {
+            return res.status(404).json({ error: 'cart not found' });
+        }
+        // verifico si el producto existe
+        const productExists = await Product.findById(productId);
+        if (!productExists) {
+            return res.status(404).json({ error: 'product not found' });
+        }
+
+        // busco si el producto ya se encuentra en el carrito
+        const existingProduct = cart.products.find(p => p.product.toString() === productId);
+        if (existingProduct) {
+        // si el producto existe entonces incremento la cantidad
+            existingProduct.quantity += 1;
+        } else {
+            // si el producto no está en el carrito entonces asigno 1 de cantidad
+            cart.products.push({ product: productId, quantity: 1 });
+        }
+
+        await cart.save();   // guardo los cambios en la base de datos
+
+        res.json(cart);  // devuelvo el carrito actualizado
+
+    } catch (error) {
+        console.log('error adding product to cart', error);
+        res.status(500).json({ error: 'error adding product to cart' });
+    }
+}
+
+export default { getCartById, seedCarts, addProductToCart };
