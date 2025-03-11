@@ -77,5 +77,25 @@
     "thumbnails": [
       "/img/958953-MLA80330593545_102024-O.webp"
     ]
+  },
+  {
+    "id": 7,
+    "title": "Samsung Unidad Enfriadora Condensación Por Aire 100TR",
+    "price": 207740383.24,
+    "description": "La unidad enfriadora Samsung con condensación por aire de 100TR es ideal para grandes sistemas de climatización industrial y comercial. Su diseño eficiente y robusto permite un rendimiento óptimo con bajo consumo energético.",
+    "code": "P007",
+    "stock": 20,
+    "category": "climatizacion",
+    "thumbnails": []
+  },
+  {
+    "id": 8,
+    "title": "Sony Unidad Enfriadora Condensación Por Aire 150TR",
+    "price": 3000000.24,
+    "description": "La unidad enfriadora Sony con condensación por aire de 150TR es ideal para grandes sistemas de climatización industrial y comercial. Su diseño eficiente y robusto permite un rendimiento óptimo con bajo consumo energético.",
+    "code": "P008",
+    "stock": 50,
+    "category": "climatizacion",
+    "thumbnails": []
   }
 ]

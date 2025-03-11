@@ -8,6 +8,7 @@ const productSchemma = new mongoose.Schemma({
     code: { type: String, required: true, unique: true},
     stock: { type: Number, required: true },
     category: { type: String, required: true },
+    status: { type: String, default: 'available' },
     thumbails: { type: [String], default: [] }
 })
 

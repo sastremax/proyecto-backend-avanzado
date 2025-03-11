@@ -77,7 +77,7 @@ router.get('/', (req, res) => {
     res.json(products);  // Respondo con la lista de todos los productos en formato JSON
 });
 
-// obtengo un producto por ID
+obtengo un producto por ID
 router.get('/:pid', (req, res) => {
     const product = productManager.getProductById(req.params.pid);  // Busco el producto con el ID que llega en los parámetros
 
@@ -85,6 +85,12 @@ router.get('/:pid', (req, res) => {
         res.status(404).send('Product not found');  //  el resultado sera un error
     }
     res.json(product);  // si lo encuentro devuelvo un JSON del producto
+});
+
+agregar un producto nuevo
+router.post('/', (req, res) => {
+    const newProduct = productManager.addProduct(req.body);  // agrego un producto nuevo
+    res.status(201).json(newProduct); //  da como resultado un 201
 });
 */
 
@@ -94,11 +100,8 @@ router.get('/', productController.getProducts);
 // obtener un producto por ID desde MongoDB
 router.get('/:id', productController.getProductById);
 
-// agregar un producto nuevo
-router.post('/', (req, res) => {
-    const newProduct = productManager.addProduct(req.body);  // agrego un producto nuevo
-    res.status(201).json(newProduct); //  da como resultado un 201
-});
+// agregar un producto a la base de datos
+router.post('/', validateProduct, productController.addProduct)
 
 // Actualizar un producto ya existente
 router.put('/:pid', (req, res) => {

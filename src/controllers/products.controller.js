@@ -24,4 +24,32 @@ const getProductById = async (req, res) => {
     }
 }
 
-export default { getProducts, getProductById };
+const addProduct = async (req,res) => {
+    try {
+        const { title, description, price, code, stock, category, thumbnails } = req.body;
+        if (!title || !description || !price || !code || !stock || !category) {
+            return res.status(404).json({ error: 'missing required fields' });  // si no se encuentra alguno de los campos requeridos devuelvo un 404 not found
+        }
+
+        // creo un nuevo producto en la base de datos
+        const newProduct = new Product({
+            title,
+            description,
+            price,
+            code,
+            stock,
+            category,
+            status: req.body.status ? req.body.status : 'available',   // si no se adjunta por defecto el status es available
+            thumbnails: thumbnails || []
+        });
+
+        await newProduct.save();  // guardo el producto en la base de datos
+        res.status(201).json(newProduct); // devuelvo el producto creado con un estado 201
+        
+    } catch (error) {
+        console.log('error adding product', error) 
+        res.status(500).json({ error: 'error adding product' }); // devuelvo un error 500
+    }
+};
+
+export default { getProducts, getProductById, addProduct };
