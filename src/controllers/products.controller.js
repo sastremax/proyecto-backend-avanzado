@@ -11,6 +11,7 @@ const getProducts = async (req, res) => {
     }
 };
 
+// busco un producto por ID
 const getProductById = async (req, res) => {
     try {
         const product = await product.findById(req.params.id);    // busco el producto en la base de datos por su ID
@@ -24,6 +25,7 @@ const getProductById = async (req, res) => {
     }
 }
 
+// creo un producto nuevo
 const addProduct = async (req,res) => {
     try {
         const { title, description, price, code, stock, category, thumbnails } = req.body;
@@ -52,6 +54,7 @@ const addProduct = async (req,res) => {
     }
 };
 
+// actualizo un producto
 const updateProduct = async (req, res) => {
     try {
         const { id } = req.params;
@@ -79,4 +82,25 @@ const updateProduct = async (req, res) => {
     }
 }
 
-export default { getProducts, getProductById, addProduct, updateProduct };
+// elimino un producto de la base de datos
+const deleteProduct = async (req,res) => {
+    try {
+        const { id } = req.params;
+
+        // busco y elimino el producto en la base de datos
+        const deletedProduct = await Product.findByIdAndDelete(id);
+
+        // si el producto no existe devuelvo un error 404
+        if (!deletedProduct) {
+            return res.status(404).json({ error: 'product not found' });
+        }
+
+        res.json({ message: 'product deleted successfully' })  // confirmo la eliminacion
+
+    } catch (error) {
+        console.log('error deleting product:', error);
+        res.status(500).json({ error: 'error deleting product' }); // devuelvo un error 500
+    }
+}
+
+export default { getProducts, getProductById, addProduct, updateProduct, deleteProduct };

@@ -98,6 +98,16 @@ router.put('/:pid', (req, res) => {
     }
     res.json(updatedProduct); // envio el producto actualizado    
 });
+
+Eliminar un producto
+router.delete('/:pid', (req, res) => {
+    const deleted = productManager.deleteProduct(req.params.pid); //  elimino el prodcuto
+
+    if (!deleted) {
+        return res.status(404).send('Product not found');   // si nmo existe da como resultado un 404
+    }
+    res.status(204).send('No content');  // da como resultado un 204 no content
+});
 */
 
 // obtener todos los productos desde MongoDB
@@ -112,14 +122,7 @@ router.post('/', validateProduct, productController.addProduct);
 // Actualizar un producto ya existente
 router.put('/:id', productController.updateProduct);
 
-// Eliminar un producto
-router.delete('/:pid', (req, res) => {
-    const deleted = productManager.deleteProduct(req.params.pid); //  elimino el prodcuto
-
-    if (!deleted) {
-        return res.status(404).send('Product not found');   // si nmo existe da como resultado un 404
-    }
-    res.status(204).send('No content');  // da como resultado un 204 no content
-});
+// eliminar un producto
+router.delete('/:id', productController.deleteProduct);
 
 export default router;   // exporto el router para que se pueda usar en el archivo principal
