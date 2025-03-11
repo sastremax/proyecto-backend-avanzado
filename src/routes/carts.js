@@ -11,6 +11,9 @@ router.use(logger);
 // obtengo un carrito por id desde mongodb
 router.get('/:id', cartController.getCartById);
 
+// agrego una ruta para insertar carritos de prueba en la base de datos
+router.post('/seed', cartController.seedCarts);
+
 // agrego un carrito desde mongodb
 
 
