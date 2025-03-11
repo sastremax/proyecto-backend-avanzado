@@ -125,4 +125,7 @@ router.put('/:id', productController.updateProduct);
 // eliminar un producto
 router.delete('/:id', productController.deleteProduct);
 
+// agrego una ruta para insertar productos de prueba en la base de datos
+router.post('/seed', productController.seedProducts);
+
 export default router;   // exporto el router para que se pueda usar en el archivo principal

@@ -1,5 +1,80 @@
 import Product from "../models/Product.model.js";
 
+// función para insertar productos de prueba en la base de datos
+const seedProducts = async (req, res) => {
+    try {
+        const products = [
+            {
+                title: "Smart Tv Qled 50''",
+                price: 801099,
+                description: "Smart TV RCA QL50CH100-F. Este televisor QLED de 50 pulgadas combina calidad de imagen Ultra HD 4K con un diseño moderno y funciones avanzadas. Sumergite en colores vibrantes, contrastes profundos y detalles increíbles gracias a su tecnología HDR10+ y Dolby Vision.",
+                code: "P001",
+                status: "available",
+                stock: 100,
+                category: "tv",
+                thumbnails: [
+                    "/img/632830-MLA81409765455_122024-F.webp",
+                    "/img/1739130402536-882348-MLU78161249435_082024-O.webp"
+                ]
+            },
+            {
+                title: "Celular Samsung Galaxy A55 5g 256/ 8gb",
+                price: 799999,
+                description: "Celular Samsung Galaxy A55 5g 256/ 8gb Tipo de CPU Octa-Núcleo 2,75 GHz, 2 GHz 1080 x 2340 (Full HD+)",
+                code: "P002",
+                status: "available",
+                stock: 50,
+                category: "phone",
+                thumbnails: ["/img/794825-MLA80865429208_122024-O.webp"]
+            },
+            {
+                title: "Heladera LG Side By Side",
+                price: 17999999,
+                description: "Heladera LG Side By Side French Door 708 Lts, Con tecnología inverter: Sí, 90.8 cm x 88.6 cm x 177.2 cm",
+                code: "P003",
+                status: "available",
+                stock: 1,
+                category: "refrigeracion",
+                thumbnails: ["/img/952866-MLA41478756034_042020-O.webp"]
+            },
+            {
+                title: "Bafle JBL Eon 618s Subwoofer Activo 1000W",
+                price: 3480000000,
+                description: "El JBL EON618S es un subwoofer activo de 18 pulgadas diseñado para ofrecer un sonido potente y profundo. Con una potencia de 1000W, este subwoofer es ideal para eventos en vivo, estudios y sistemas de sonido profesional. Su diseño portátil y robusto lo hace fácil de transportar y configurar. Excelente para el hogar",
+                code: "P005",
+                status: "available",
+                stock: 5,
+                category: "audio",
+                thumbnails: ["/img/777887-MLA79687001017_102024-F.webp"]
+            },
+            {
+                title: "Samsung Unidad Enfriadora Condensación Por Aire 100TR",
+                price: 207740383.24,
+                description: "La unidad enfriadora Samsung con condensación por aire de 100TR es ideal para grandes sistemas de climatización industrial y comercial. Su diseño eficiente y robusto permite un rendimiento óptimo con bajo consumo energético.",
+                code: "P007",
+                stock: 20,
+                category: "climatizacion",
+                thumbnails: []
+            },
+            {
+                title: "Sony Unidad Enfriadora Condensación Por Aire 150TR",
+                price: 3000000.24,
+                description: "La unidad enfriadora Sony con condensación por aire de 150TR es ideal para grandes sistemas de climatización industrial y comercial. Su diseño eficiente y robusto permite un rendimiento óptimo con bajo consumo energético.",
+                code: "P008",
+                stock: 50,
+                category: "climatizacion",
+                thumbnails: []
+            }
+        ];
+
+        await Product.insertMany(products);
+        res.status(201).json({ message: 'Productos agregados con éxito' });
+    } catch (error) {
+        console.error('Error al insertar productos:', error);
+        res.status(500).json({ error: 'Error al insertar productos' });
+    }
+};
+
 // obtengo todos los productos desde la base de datos
 const getProducts = async (req, res) => {
     try {
@@ -14,7 +89,7 @@ const getProducts = async (req, res) => {
 // busco un producto por ID
 const getProductById = async (req, res) => {
     try {
-        const product = await product.findById(req.params.id);    // busco el producto en la base de datos por su ID
+        const product = await Product.findById(req.params.id);    // busco el producto en la base de datos por su ID
         if (!product) {
             return res.status(404).json({ error: 'product not found' });  // si no se encuentra el producto devuelvo un 404 not found
         }
@@ -66,10 +141,10 @@ const updateProduct = async (req, res) => {
         }
 
         // busco y actualizo el producto en la base de datos
-        const updateProduct = await Product.findByIdAndUpdate(id, updateFields, { new : true });
+        const updatedProduct = await Product.findByIdAndUpdate(id, updateFields, { new : true });
 
         // si no se encuentra el producto, devuelvo un error 404
-        if (!updateProduct) {
+        if (!updatedProduct) {
             return res.status(404).json({ error: 'product not found' });
         }
 
@@ -103,4 +178,4 @@ const deleteProduct = async (req,res) => {
     }
 }
 
-export default { getProducts, getProductById, addProduct, updateProduct, deleteProduct };
+export default { getProducts, getProductById, addProduct, updateProduct, deleteProduct, seedProducts };

@@ -1,17 +1,26 @@
 import express from 'express';
-import CartManager from '../managers/CartManager.js';
 import logger from '../middlewares/logger.js';
+import cartController from '../controllers/carts.controller.js';
 
 // creo una instancia del router
 const router = express.Router();
 
-// creo una instancia de CartManager
-const cartManager = new CartManager();
-
 // Middleware a nivel del router
 router.use(logger);
 
-//  creo un carrito nuevo
+// obtengo un carrito por id desde mongodb
+router.get('/:id', cartController.getCartById);
+
+// agrego un carrito desde mongodb
+
+
+// modifico un carrito desde mongodb
+
+
+//elimino un carrito desde mongodb
+
+/*
+  creo un carrito nuevo
 router.post('/', (req, res) => {
     try {
         const newCart = cartManager.createCart();  // creo un nuevo carrito quie esta vacio    
@@ -21,7 +30,7 @@ router.post('/', (req, res) => {
     }
 });
 
-// obtengo un carrito por ID
+ obtengo un carrito por ID
 router.get('/:cid', (req, res) => {
     try {
         const cart = cartManager.getCartById(req.params.cid);  // busco el carrito por ID
@@ -36,7 +45,7 @@ router.get('/:cid', (req, res) => {
     }
 });
 
-//  agregar un producto al carrito
+  agregar un producto al carrito
 router.post('/:cid/product/:pid', (req, res) => {
     try {
         const { quantity } = req.body;  // obtengo la cantidad
@@ -54,7 +63,7 @@ router.post('/:cid/product/:pid', (req, res) => {
     }
 });
 
-// eliminar un producto de un carrito
+ eliminar un producto de un carrito
 router.delete('/:cid/product/:pid', (req, res) => {
     try {
         const updatedCart = cartManager.removeProductFromCart(req.params.cid, req.params.pid); // llamo a la funcion para eliminar el producto del carrito
@@ -62,14 +71,14 @@ router.delete('/:cid/product/:pid', (req, res) => {
         if (!updatedCart) {                                             // si no lo encuentro
             return res.status(404).send('Cart not found');     // da un resultado 404
         }
-        // si lo encuentro
+         si lo encuentro
         return res.status(204).send('No Content'); // envio el carrito actualizado da un resultado 204
     } catch (error) {
         res.status(500).send('Error removing product from cart'); // manejo de error 500
     }
 });
 
-// eliminar un carrito
+ eliminar un carrito
 router.delete('/:cid', (req, res) => {
     try {
         const deleted = cartManager.deleteCart(req.params.cid); // llamo a la funcion que elimina el carrito
@@ -77,11 +86,13 @@ router.delete('/:cid', (req, res) => {
         if (!deleted) {                     // si no encuentro el carrito
             return res.status(404).send('Cart not found');    // da un resultado 404
         }
-        // si lo encuentro    
+         si lo encuentro    
         res.status(204).send('No Content');          // da un resultado 204
     } catch (error) {
         res.status(500).send('Error deleting cart'); // manejo de error 500
     }
 });
+*/
+
 
 export default router;  // exporto el router para que se pueda usar en el archivo principal

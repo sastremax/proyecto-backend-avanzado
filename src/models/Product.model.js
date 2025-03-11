@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 // defino el esquema para los productos
-const productSchemma = new mongoose.Schemma({
+const productSchema = new mongoose.Schema({
     title: {type: String, required: true},
     description: { type: String, required: true },
     price: { type: Number, required: true},
