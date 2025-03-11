@@ -9,6 +9,7 @@ import { engine } from 'express-handlebars'; // importo el motor de plantillas h
 import fs from 'fs';  // importo fs para leer archivos
 import http from 'http';  // para crear el servidor HTTP
 import { Server as SocketIOServer } from 'socket.io'; // para la conexion de WEBSOCKET
+import connectDB from './config/database.js';  // conexion a MongoDB
 
 // hay que inicializar
 const app = express(); // a partir de aqui app tendra todas las funcionalidades de express
@@ -17,6 +18,9 @@ const server = http.createServer(app);   // creo el servidor http con express
 const io = new SocketIOServer(server);  // creo la conexion de socket.io con el servidor http
 
 const PORT = 8080;  // puerto 8080
+
+// conexion a MongoDB
+connectDB();  
 
 // Configuración de Handlebars
 app.engine('handlebars', engine());
