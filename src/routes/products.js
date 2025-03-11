@@ -1,6 +1,7 @@
 import express from 'express';
 import ProductManager from '../managers/ProductManager.js';
 import upload from '../middlewares/multer.js';
+import productController from '../controllers/products.controller.js';
 
 // creo una instancia del router
 const router = express.Router();
@@ -69,7 +70,7 @@ router.post('/uploadMultiple', upload.array('images', 5), (req, res) => {
     });
 });
 
-// obtengo todos los productos
+/* obtengo todos los productos
 router.get('/', (req, res) => {
     const limit = parseInt(req.query.limit);  // se agrega un limite de consultas mediante un parseo a entero
     const products = productManager.getProducts(limit);  // obtengo los productos con o sin limite   
@@ -85,6 +86,13 @@ router.get('/:pid', (req, res) => {
     }
     res.json(product);  // si lo encuentro devuelvo un JSON del producto
 });
+*/
+
+// obtener todos los productos desde MongoDB
+router.get('/', productController.getProducts);
+
+// obtener un producto por ID desde MongoDB
+router.get('/:id', productController.getProductById);
 
 // agregar un producto nuevo
 router.post('/', (req, res) => {
