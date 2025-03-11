@@ -52,4 +52,31 @@ const addProduct = async (req,res) => {
     }
 };
 
-export default { getProducts, getProductById, addProduct };
+const updateProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateFields = req.body;
+
+        // valido si se enviaron campos para actualizar
+        if (Object.keys(updateFields).length === 0) {
+            return res.status(400).json({ error: 'no fields provided for update' });
+        }
+
+        // busco y actualizo el producto en la base de datos
+        const updateProduct = await Product.findByIdAndUpdate(id, updateFields, { new : true });
+
+        // si no se encuentra el producto, devuelvo un error 404
+        if (!updateProduct) {
+            return res.status(404).json({ error: 'product not found' });
+        }
+
+        // devuelvo el producto actualizado
+        res.json(updatedProduct);
+
+    } catch (error) {
+        console.log('errorupdating product:', error);   // muestro el error en consola
+        res.status(500).json({ error: 'error updating product' }); // devuelvo un error 500
+    }
+}
+
+export default { getProducts, getProductById, addProduct, updateProduct };

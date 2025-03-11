@@ -1,13 +1,9 @@
 import express from 'express';
-import ProductManager from '../managers/ProductManager.js';
 import upload from '../middlewares/multer.js';
 import productController from '../controllers/products.controller.js';
 
 // creo una instancia del router
 const router = express.Router();
-
-// creo una instancia de ProductManager
-const productManager = new ProductManager();
 
 // Middleware a nivel de router
 router.use((req, res, next) => {
@@ -92,6 +88,16 @@ router.post('/', (req, res) => {
     const newProduct = productManager.addProduct(req.body);  // agrego un producto nuevo
     res.status(201).json(newProduct); //  da como resultado un 201
 });
+
+Actualizar un producto ya existente
+router.put('/:pid', (req, res) => {
+    const updatedProduct = productManager.updateProduct(req.params.pid, req.body); // actualizo el producto
+
+    if (!updatedProduct) {
+        return res.status(404).send('Product not found');  // da como resultado un 404
+    }
+    res.json(updatedProduct); // envio el producto actualizado    
+});
 */
 
 // obtener todos los productos desde MongoDB
@@ -101,17 +107,10 @@ router.get('/', productController.getProducts);
 router.get('/:id', productController.getProductById);
 
 // agregar un producto a la base de datos
-router.post('/', validateProduct, productController.addProduct)
+router.post('/', validateProduct, productController.addProduct);
 
 // Actualizar un producto ya existente
-router.put('/:pid', (req, res) => {
-    const updatedProduct = productManager.updateProduct(req.params.pid, req.body); // actualizo el producto
-
-    if (!updatedProduct) {
-        return res.status(404).send('Product not found');  // da como resultado un 404
-    }
-    res.json(updatedProduct); // envio el producto actualizado    
-});
+router.put('/:id', productController.updateProduct);
 
 // Eliminar un producto
 router.delete('/:pid', (req, res) => {
