@@ -21,6 +21,7 @@ router.post('/:id/products/:productId', cartController.addProductToCart);
 
 
 //elimino un carrito desde mongodb
+router.delete('/:id/products/:productId', cartController.removeProductFromCart);
 
 /*
   creo un carrito nuevo

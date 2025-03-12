@@ -96,4 +96,32 @@ const addProductToCart = async (req, res) => {
     }
 }
 
-export default { getCartById, seedCarts, addProductToCart };
+const removeProductFromCart = async (req, res) => {
+    try {
+        const { id, productId } = req.params;
+
+        // verifico si el carrito existe
+        const cart = await Cart.findById(id);
+        if (!cart) {
+            return res.status(404).json({ error: 'cart not found' });
+        }
+
+        // filtro los productos y elimino el que tenga el productId
+        const updatedProducts = cart.products.filter(p => p.product._id.toString() !== productId);
+
+        // si el carrito no tenía el producto devuelvo un error 404
+        if (updatedProducts.length === cart.products.length) {
+            return res.status(404).json({ error: 'product not found in cart' });
+        }
+
+        cart.products = updatedProducts;
+        await cart.save(); // guardo los cambios en la base de datos
+        
+        res.json({ message: 'product removed from cart', cart });
+    } catch (error) {
+        console.log('error removing product from cart:', error);
+        res.status(500).json({ error: 'error removing product from cart' });
+    }
+};
+
+export default { getCartById, seedCarts, addProductToCart, removeProductFromCart };
