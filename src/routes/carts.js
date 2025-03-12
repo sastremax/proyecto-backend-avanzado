@@ -17,10 +17,10 @@ router.post('/seed', cartController.seedCarts);
 // agrego un carrito desde mongodb
 router.post('/:id/products/:productId', cartController.addProductToCart);
 
-// modifico un carrito desde mongodb
+// elimino un carrito entero desde mongodb
+router.delete('/:id', cartController.deleteCart);
 
-
-//elimino un carrito desde mongodb
+//elimino un producto de un carrito desde mongodb
 router.delete('/:id/products/:productId', cartController.removeProductFromCart);
 
 /*

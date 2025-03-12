@@ -124,4 +124,25 @@ const removeProductFromCart = async (req, res) => {
     }
 };
 
-export default { getCartById, seedCarts, addProductToCart, removeProductFromCart };
+// eliminar el carrito entero
+const deleteCart = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // busco y elimino el carrito en la base de datos
+        const deletedCart = await Cart.findByIdAndDelete(id);
+
+        // si el carrito no existe devuelvo un error 404
+        if (!deletedCart) {
+            return res.status(404).json({ error: 'cart not found' });
+        }
+
+        res.json({ message: 'cart deleted successfully' }); // confirmo la eliminacion
+
+    } catch (error) {
+        console.log('error delete cart', error);
+        res.status(500).json({ error: 'error deleting cart' });
+    }
+}
+
+export default { getCartById, seedCarts, addProductToCart, removeProductFromCart, deleteCart };
