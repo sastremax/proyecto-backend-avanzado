@@ -60,6 +60,19 @@ const getCartById = async (req, res) => {
     }
 }
 
+// agrego un carrito vacio a la BASE DE DATOS
+const createCart = async (req, res) => {
+    try {
+        const newCart = new Cart({ products: [] });   // creo un carrito vacio
+        await newCart.save();        // lo guardo en la base de datos
+        res.status(201).json(newCart); // devuelvo el carrito creado con un estado 201
+
+    } catch (error) {
+        console.log('error creating cart', error);  // muestro el error en consola
+        res.status(500).json({ error: 'error creating cart' }); // devuelvo un error 500
+    }
+};
+
 // agrego un producto a un carrito en la base de datos
 const addProductToCart = async (req, res) => {
     try {
@@ -124,6 +137,25 @@ const removeProductFromCart = async (req, res) => {
     }
 };
 
+// eliminar todos los productos del carrito
+const clearCart = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        //verifico si el carrito existe
+        const cart = await Cart.findById(id);
+        if (!cart) {
+            return res.status(404).json({ error: 'cart not found' });
+        }
+        cart.products = []; // vacío el array de productos
+        await cart.save();  // guardo los cambios en la base de datos
+            res.json({ message: 'cart cleared successfully', cart});
+    } catch (error) {
+        console.log('error clearing cart:', error);  // devuelvo un error por consola
+        res.status(500).json({ error: 'error clearing cart' });  // devuelvo un error 500
+    }
+}
+
 // eliminar el carrito entero
 const deleteCart = async (req, res) => {
     try {
@@ -145,4 +177,4 @@ const deleteCart = async (req, res) => {
     }
 }
 
-export default { getCartById, seedCarts, addProductToCart, removeProductFromCart, deleteCart };
+export default { getCartById, seedCarts, addProductToCart, removeProductFromCart, deleteCart, createCart, clearCart };

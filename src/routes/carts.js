@@ -14,14 +14,20 @@ router.get('/:id', cartController.getCartById);
 // agrego una ruta para insertar carritos de prueba en la base de datos
 router.post('/seed', cartController.seedCarts);
 
-// agrego un carrito desde mongodb
+// agrego un carrito vacío en mongodb
+router.post('/', cartController.createCart);
+
+// agrego un producto al carrito desde mongodb
 router.post('/:id/products/:productId', cartController.addProductToCart);
 
-// elimino un carrito entero desde mongodb
-router.delete('/:id', cartController.deleteCart);
+// vacio un carrito entero desde mongodb, no lo elimino
+router.put('/:id', cartController.clearCart);
 
 //elimino un producto de un carrito desde mongodb
 router.delete('/:id/products/:productId', cartController.removeProductFromCart);
+
+//elimino un carrito desde mongodb
+router.delete('/:id', cartController.deleteCart);
 
 /*
   creo un carrito nuevo
