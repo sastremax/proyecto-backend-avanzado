@@ -45,7 +45,14 @@ const getCartById = async (req, res) => {
         const { id } = req.params;
 
         // busco el carrito en la base de datos y utilizo populate() para obtener los detalles de los productos
-        const cart = await Cart.findById(id).populate('products.product', 'title price description');
+        const cart = await Cart.findById(id).populate({
+            path: 'products.product',
+            select: 'title price description stock category thumbnails',
+            populate: {
+                path: 'category',
+                select: 'name'
+            }
+        });
 
         // si el carrito no existe, devuelvo un error 404
         if (!cart) {

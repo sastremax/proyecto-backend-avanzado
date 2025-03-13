@@ -75,11 +75,48 @@ const seedProducts = async (req, res) => {
     }
 };
 
-// obtengo todos los productos desde la base de datos
+// obtengo todos los productos desde la base de datos con paginacion y filtros
 const getProducts = async (req, res) => {
     try {
-        const products = await Product.find(); // con el metodo find obtengo todos los productos de la Base de Datos
-        res.json(products);  // luego envio la respuesta en formato json
+        // obtengo los parámetros de consulta con valores por defecto
+        const limit = isNaN(req.query.limit) ? 5 : parseInt(req.query.limit);
+        const page = isNaN(req.query.page) ? 1 : parseInt(req.query.page);
+        const { sort, query } = req.query;
+
+        // agrego el filtro basado en el parametro query
+        let filter = {};
+        if (query) {
+            const queryParts = query.split(':');
+            if (queryParts.length === 2) {
+                const [key, value] = queryParts;
+                filter[key] = { $regex: value, $options: "i" };   // filtro flexible e insensible a mayusculas
+            }
+        }
+
+        // agrego opciones de paginacion y ordenamiento
+        const options = {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sort: sort && (sort === "asc" || sort === "desc") ? { price: sort === "asc" ? 1 : -1 } : undefined // ordeno solo por ascendente o descendente
+        };
+
+        // realizo la consulta paginada con filtros
+        const result = await Product.paginate(filter, options);
+
+        // devuelvo el resultado con la estructura solicitada
+        res.json({
+            status: "success",
+            payload: result.docs,
+            totalPages: result.totalPages,
+            prevPage: result.prevPage,
+            nextPage: result.nextPage,
+            page: result.page,
+            hasPrevPage: result.hasPrevPage,
+            hasNextPage: result.hasNextPage,
+            prevLink: result.hasPrevPage ? `/products?page=${result.prevPage}&limit=${limit}` : null,
+            nextLink: result.hasNextPage ? `/products?page=${result.nextPage}&limit=${limit}` : null
+        });
+        
     } catch (error) {
         console.error('error getting products:', error)   // muiestro el error en consola
         res.status(500).json({ error: 'error getting products' })  // devuelvo un error 500 de server
