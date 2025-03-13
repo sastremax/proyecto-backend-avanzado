@@ -226,24 +226,35 @@ const updateCart = async (req, res) => {
 // actualizo la cantidad de un producto dentro de un carrito
 const updateProductQuantity = async (req, res) => {
     try {
-        const { cid, pid } = req.params;
-        const { quantity } = req.body;
+        const { id, productId } = req.params;   // obtengo el id del carrito y el id del producto desde los parametros
+        const { quantity } = req.body;  // obtengo la nueva cantidad desde el body de la peticion
 
         // valido que la cantidad sea un numero valido
         if (!quantity || quantity <=0) {
-            return res.status(400).json({ error: 'invalid quantity' });
+            return res.status(400).json({ error: 'invalid quantity' });  // devuelvo un error 400
         }
 
         // busco el carrito en la base de datos
-        const cart = await Cart.findById(cid);
+        const cart = await Cart.findById(id);
         if (!cart) {
-            return res.status(404).json({ error: 'cart not found' });
+            return res.status(404).json({ error: 'cart not found' });  // devuelvo error 404
         }
 
         // busco el producto dentro del carrito
-        const productIndex = cart.products.findIndex(p => p.product.toString() === pid);
+        const productIndex = cart.products.findIndex(p => p.product.toString() === productId);
         if (productIndex === -1) {
-            return res.status(404).json({ error: 'product not found in cart' });
+            return res.status(404).json({ error: 'product not found in cart' });    // devuelvo error 404 si no esta el producto en el carrtio
+        }
+
+        // busco el producto en la base de datos para validar su stock
+        const product = await Product.findById(productId);
+        if (!product) {
+            return res.status(404).json({ error: 'product not found in database' });
+        }
+
+        // verifico si la cantidad solicitada supera el stock disponible
+        if (quantity > product.stock) {
+            return res.status(400).json({ error: `not enough stock available, only ${product.stock} left` });
         }
 
         // actualizo la cantidad del producto
@@ -252,10 +263,11 @@ const updateProductQuantity = async (req, res) => {
 
         // devuelvo un mensaje de éxito
         res.json({ message: 'product quantity updated', cart });
+
     } catch (error) {
         console.log('error updating product quantity:', error);
-        res.status(500).json({ error: 'error updating product quantity' });
+        res.status(500).json({ error: 'error updating product quantity' });   // devuelvo un error 500
     }
 }
 
-export default { getCartById, seedCarts, addProductToCart, removeProductFromCart, deleteCart, createCart, clearCart, updateCart };
+export default { getCartById, seedCarts, addProductToCart, removeProductFromCart, deleteCart, createCart, clearCart, updateCart, updateProductQuantity };

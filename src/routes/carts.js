@@ -26,6 +26,9 @@ router.put('/:id', cartController.clearCart);
 // actualizo un carrito reemplazando todos sus productos
 router.put('/:id/products', cartController.updateCart);
 
+// actualizo solo la cantidad de un producto dentro de un carrito
+router.put('/:id/products/:productId', cartController.updateProductQuantity);
+
 //elimino un producto de un carrito desde mongodb
 router.delete('/:id/products/:productId', cartController.removeProductFromCart);
 
