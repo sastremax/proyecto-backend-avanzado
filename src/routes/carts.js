@@ -23,6 +23,9 @@ router.post('/:id/products/:productId', cartController.addProductToCart);
 // vacio un carrito entero desde mongodb, no lo elimino
 router.put('/:id', cartController.clearCart);
 
+// actualizo un carrito reemplazando todos sus productos
+router.put('/:id/products', cartController.updateCart);
+
 //elimino un producto de un carrito desde mongodb
 router.delete('/:id/products/:productId', cartController.removeProductFromCart);
 

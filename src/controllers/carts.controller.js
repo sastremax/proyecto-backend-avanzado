@@ -184,4 +184,78 @@ const deleteCart = async (req, res) => {
     }
 }
 
-export default { getCartById, seedCarts, addProductToCart, removeProductFromCart, deleteCart, createCart, clearCart };
+// actualizo el carrito con un nuevo conjunto de productos
+const updateCart = async (req, res) => {
+    try {
+        const { id } = req.params;   // obtengo el id del carrito desde los parametros de la URL
+        const { products } = req.body;  // recibo el nuevo array de productos desde el BODY de la peticion
+
+        // muestro en consola el body recibido para verificar si products llega correctamente
+        console.log('----- DEPURACIÓN: BODY RECIBIDO EN PUT /api/carts/:id -----');
+        console.log('Request body:', req.body);
+        console.log('Products received:', products);
+
+
+        //valido que se este enviando un array de productos
+        if (!products || !Array.isArray(products) || products.length === 0) {
+            console.log('ERROR: El body de la petición no tiene un array válido de productos.');
+            return res.status(400).json({ error: 'products must be a non-empty array' });  // si no es un array o no existe devuelvo un 400
+        }
+
+        // busco el carrito y actualizo el carrito
+        const cart = await Cart.findById(id);
+
+        // si el carrito no existe devuelvo un 404 not found
+        if (!cart) {
+            console.log('carrito no encontrado');
+            return res.status(404).json({ error: 'cart not found' });
+        }
+
+        // reemplazo los productos actuales por los nuevos
+        cart.products = products;
+        await cart.save(); // guardo los cambios en la base de datos
+
+        // devuelvo un mensaje de éxito junto con el carrito actualizado
+        res.json({ message: 'cart updated successfully', Cart });
+    } catch (error) {
+        console.log('error updating cart:', error);
+        res.status(500).json({ error: 'error updating cart' });
+    }
+}
+
+// actualizo la cantidad de un producto dentro de un carrito
+const updateProductQuantity = async (req, res) => {
+    try {
+        const { cid, pid } = req.params;
+        const { quantity } = req.body;
+
+        // valido que la cantidad sea un numero valido
+        if (!quantity || quantity <=0) {
+            return res.status(400).json({ error: 'invalid quantity' });
+        }
+
+        // busco el carrito en la base de datos
+        const cart = await Cart.findById(cid);
+        if (!cart) {
+            return res.status(404).json({ error: 'cart not found' });
+        }
+
+        // busco el producto dentro del carrito
+        const productIndex = cart.products.findIndex(p => p.product.toString() === pid);
+        if (productIndex === -1) {
+            return res.status(404).json({ error: 'product not found in cart' });
+        }
+
+        // actualizo la cantidad del producto
+        cart.products[productIndex].quantity = quantity;
+        await cart.save(); // guardo los cambios en la base de datos
+
+        // devuelvo un mensaje de éxito
+        res.json({ message: 'product quantity updated', cart });
+    } catch (error) {
+        console.log('error updating product quantity:', error);
+        res.status(500).json({ error: 'error updating product quantity' });
+    }
+}
+
+export default { getCartById, seedCarts, addProductToCart, removeProductFromCart, deleteCart, createCart, clearCart, updateCart };
