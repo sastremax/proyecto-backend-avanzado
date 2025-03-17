@@ -41,7 +41,7 @@ router.post('/upload/:pid', upload.single('image'), (req, res) => {
         return res.status(404).json({ error: 'Product not found' });
     }
 
-    // agrego la imagen al array thumbails
+    // agrego la imagen al array thumnbails
     const imagePath = `/img/${req.file.filename}`; // Ruta donde se guardó la imagen
     if (!product.thumbnails) {
         product.thumbnails = []; // Si no existe, inicializo el array
@@ -110,22 +110,25 @@ router.delete('/:pid', (req, res) => {
 });
 */
 
-// obtener todos los productos desde MongoDB
+// obtener todos los productos en formato JSON (para Postman)
 router.get('/', productController.getProducts);
 
-// obtener un producto por ID desde MongoDB
+// obtener la vista con productos paginados en Handlebars (para el navegador)
+router.get('/view', productController.getProductsView);
+
+// obtener un producto por ID desde MongoDB (para Postman)
 router.get('/:id', productController.getProductById);
 
-// agregar un producto a la base de datos
-router.post('/', validateProduct, productController.addProduct);
+// agregar un producto a la base de datos (para Postman)
+router.post('/', productController.addProduct);
 
-// Actualizar un producto ya existente
+// actualizar un producto ya existente (para Postman)
 router.put('/:id', productController.updateProduct);
 
-// eliminar un producto
+// eliminar un producto (para Postman)
 router.delete('/:id', productController.deleteProduct);
 
-// agrego una ruta para insertar productos de prueba en la base de datos
+// agrego una ruta para insertar productos de prueba en la base de datos (para Postman)
 router.post('/seed', productController.seedProducts);
 
 export default router;   // exporto el router para que se pueda usar en el archivo principal

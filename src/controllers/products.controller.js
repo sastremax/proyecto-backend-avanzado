@@ -7,7 +7,7 @@ const seedProducts = async (req, res) => {
             {
                 title: "Smart Tv Qled 50''",
                 price: 801099,
-                description: "Smart TV RCA QL50CH100-F. Este televisor QLED de 50 pulgadas combina calidad de imagen Ultra HD 4K con un diseño moderno y funciones avanzadas. Sumergite en colores vibrantes, contrastes profundos y detalles increíbles gracias a su tecnología HDR10+ y Dolby Vision.",
+                description: "Smart TV RCA QL50CH100-F. Este televisor QLED de 50 pulgadas combina calidad de imagen Ultra HD 4K.",
                 code: "P001",
                 status: "available",
                 stock: 100,
@@ -20,7 +20,7 @@ const seedProducts = async (req, res) => {
             {
                 title: "Celular Samsung Galaxy A55 5g 256/ 8gb",
                 price: 799999,
-                description: "Celular Samsung Galaxy A55 5g 256/ 8gb Tipo de CPU Octa-Núcleo 2,75 GHz, 2 GHz 1080 x 2340 (Full HD+)",
+                description: "Celular Samsung Galaxy A55 5g 256/ 8gb Tipo de CPU Octa-Núcleo 2,75 GHz",
                 code: "P002",
                 status: "available",
                 stock: 50,
@@ -30,7 +30,7 @@ const seedProducts = async (req, res) => {
             {
                 title: "Heladera LG Side By Side",
                 price: 17999999,
-                description: "Heladera LG Side By Side French Door 708 Lts, Con tecnología inverter: Sí, 90.8 cm x 88.6 cm x 177.2 cm",
+                description: "Heladera LG Side By Side French Door 708 Lts, Con tecnología inverter: Sí, ",
                 code: "P003",
                 status: "available",
                 stock: 1,
@@ -40,7 +40,7 @@ const seedProducts = async (req, res) => {
             {
                 title: "Bafle JBL Eon 618s Subwoofer Activo 1000W",
                 price: 3480000000,
-                description: "El JBL EON618S es un subwoofer activo de 18 pulgadas diseñado para ofrecer un sonido potente y profundo. Con una potencia de 1000W, este subwoofer es ideal para eventos en vivo, estudios y sistemas de sonido profesional. Su diseño portátil y robusto lo hace fácil de transportar y configurar. Excelente para el hogar",
+                description: "El JBL EON618S es un subwoofer activo de 18 pulgadas diseñado para ofrecer un sonido potente y profundo.",
                 code: "P005",
                 status: "available",
                 stock: 5,
@@ -50,7 +50,7 @@ const seedProducts = async (req, res) => {
             {
                 title: "Samsung Unidad Enfriadora Condensación Por Aire 100TR",
                 price: 207740383.24,
-                description: "La unidad enfriadora Samsung con condensación por aire de 100TR es ideal para grandes sistemas de climatización industrial y comercial. Su diseño eficiente y robusto permite un rendimiento óptimo con bajo consumo energético.",
+                description: "La unidad enfriadora Samsung con condensación por aire de 100TR es ideal para gran consumo energético.",
                 code: "P007",
                 stock: 20,
                 category: "climatizacion",
@@ -59,7 +59,7 @@ const seedProducts = async (req, res) => {
             {
                 title: "Sony Unidad Enfriadora Condensación Por Aire 150TR",
                 price: 3000000.24,
-                description: "La unidad enfriadora Sony con condensación por aire de 150TR es ideal para grandes sistemas de climatización industrial y comercial. Su diseño eficiente y robusto permite un rendimiento óptimo con bajo consumo energético.",
+                description: "La unidad enfriadora Sony con condensación por aire de 150TR es comercial. con bajo consumo energético.",
                 code: "P008",
                 stock: 50,
                 category: "climatizacion",
@@ -215,4 +215,48 @@ const deleteProduct = async (req,res) => {
     }
 }
 
-export default { getProducts, getProductById, addProduct, updateProduct, deleteProduct, seedProducts };
+const getProductsView = async (req, res) => {
+    try {
+        const { limit = 5, page = 1, sort, query } = req.query;
+
+        // filtro basado en la query
+        let filter = {};
+        if (query) {
+            const queryParts = query.split(':');
+            if (queryParts.length === 2) {
+                const [ key, value] = queryParts;
+                filter[key] = { $regex: value, $options: "i" };
+            }
+        }
+
+        // configuro la paginacion
+        const options = {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sort: sort && (sort === "asc" || sort === "desc") ? { price: sort === "asc" ? 1 : -1 } : undefined
+        };
+
+        // realizo la consulta con paginacion y filtros
+        const result = await Product.paginate(filter, options);
+
+        // renderizo la vista de productos con la paginacion
+        res.render('products.handlebars', {
+            layout: "main",
+            products: result.docs,
+            totalPages: result.totalPages,
+            prevPage: result.prevPage,
+            nextPage: result.nextPage,
+            page: result.page,
+            hasPrevPage: result.hasPrevPage,
+            hasNextPage: result.hasNextPage,
+            prevLink: result.hasPrevPage ? `/products?page=${result.prevPage}&limit=${limit}` : null,
+            nextLink: result.hasNextPage ? `/products?page=${result.nextPage}&limit=${limit}` : null
+        });
+
+    } catch (error) {
+        console.log('error rendering products:', error);
+        res.status(500).send('error loading products page');
+    }
+}
+
+export default { getProducts, getProductById, addProduct, updateProduct, deleteProduct, seedProducts, getProductsView };

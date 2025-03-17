@@ -6,7 +6,7 @@ import logger from './middlewares/logger.js';   // Importo el middleware
 import errorHandler from './middlewares/errorHandler.js';   // Importo el middleware de manejo de errores
 import __dirname from './utils.js';    // Importo __dirname desde utils.js
 import { engine } from 'express-handlebars'; // importo el motor de plantillas handlebarsa
-import fs from 'fs';  // importo fs para leer archivos
+// import fs from 'fs';  // importo fs para leer archivos
 import http from 'http';  // para crear el servidor HTTP
 import { Server as SocketIOServer } from 'socket.io'; // para la conexion de WEBSOCKET
 import connectDB from './config/database.js';  // conexion a MongoDB
@@ -38,76 +38,6 @@ app.use(express.urlencoded({ extended: true }));
 // Middleware a nivel de aplicación
 app.use(logger);
 
-// rutas para handlebars
-app.get('/products', (req, res) => {   // ruta para mostrar los productos
-    fs.readFile(path.join(__dirname, 'data', 'products.json'), 'utf-8', (err, data) => {  // leo el archivo 'products.json' de la carpeta 'data'
-        if (err) {
-            return res.status(500).json({ error: 'Error reading products data' }); // retorno un 500
-        }
-        const products = JSON.parse(data);  // parseo el contenido de JSON
-
-        res.render('home', { products });  // siempre se devuelve un res.render en handlebars: renderizo la vista "home" de los productos
-    });
-});
-
-// Ruta para agregar un producto (en el backend)
-app.post('/api/products', (req, res) => {
-    const { title, price, description, code, stock, category, thumbnails } = req.body;
-
-    if (!title || !price || !description || !stock || !category) {
-        return res.status(400).json({ error: 'Missing required fields' });
-    }
-
-    const newCode = code || 'P' + Date.now();  // genero un codigo unico si no se genera
-    console.log('thumbnails from request:', thumbnails);
-    const newThumbnails = thumbnails || [];   // si no se proporcionan thumbnails se asigna un array vacio
-
-    // leo el archivo de productos
-    fs.readFile(path.join(__dirname, 'data', 'products.json'), 'utf-8', (err, data) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error al leer los productos' });
-        }
-
-        const products = JSON.parse(data);
-        const newId = products.length ? Math.max(...products.map(p => p.id)) + 1 : 1;      // si no hay productos el id comienza en 1
-        const newProduct = {
-            id: newId,
-            title,
-            price: parseFloat(price),
-            description,
-            code: newCode,
-            stock,
-            category,
-            thumbnails: newThumbnails,
-        };    // nuevo producto con id
-
-        products.push(newProduct);   // agrego el producto nuevo
-
-        // guardo el archivo de productos
-        fs.writeFile(path.join(__dirname, 'data', 'products.json'), JSON.stringify(products, null, 2), (err) => {
-            if (err) {
-                return res.status(500).json({ error: 'Error al guardar el producto' });   // en caso de error devuelve un 500
-            }
-
-            console.log('¡Producto agregado con exito');
-            io.emit('newProduct', newProduct);   // emito el producto nuevo pero ahora a todos los clientes conectados
-            res.status(201).json(newProduct);   // retorno un 201
-        });
-    });   
-});
-
-app.get('/realtimeproducts', (req, res) => {   // ruta para mostrar los productos en tiempo real
-    fs.readFile(path.join(__dirname, 'data', 'products.json'), 'utf-8', (err, data) => {  // leo el archivo 'products.json' de la carpeta 'data'
-        if (err) {
-            return res.status(500).json({ error: 'Error reading products data' });  // retorno un 500
-        }
-
-        const products = JSON.parse(data);   // parseo el contenido de JSON
-
-        res.render('realTimeProducts', { products });   // renderizo realtimeproducts a la vista y paso los productos
-    });
-});
-
 // configuracion de websockets con socket.io
 io.on('connection', (socket) => {
     console.log('A user connected');   // confirmo que un usuario se ha conectado
@@ -131,9 +61,12 @@ io.on('connection', (socket) => {
     });
 });
 
-// configuración de las rutas para la API
-app.use('/api/products', productsRouter);
-app.use('/api/carts', cartsRouter);
+// configuración de las rutas para la API y vistas
+app.use('/api/products', productsRouter);    // API en JSON para productos
+app.use('/api/carts', cartsRouter);  // API en JSON para carritos
+
+// configuración de las vistas de handlebars
+app.use('/products', productsRouter);
 
 // Middleware para manejar rutas no encontradas
 app.use((req, res, next) => {
