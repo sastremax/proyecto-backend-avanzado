@@ -26,6 +26,32 @@ function addTimestamp(req, res, next) {
     next();
 }
 
+// Middleware para subir imagenes
+router.post('/:id/upload', upload.single('image'), async (req, res) => {
+    try {
+        const { id } = req.params; // ID del producto
+        // verifico si se ha subido un archivo sino retorno un error
+        if (!req.file) {
+            return res.status(400).json({ error: 'No image uploaded' });
+        }
+
+        const imagePath = `/img/${req.file.filename}`; // Ruta de la imagen guardada
+
+        // Actualizamos el producto agregando la nueva imagen
+        const updatedProduct = await productController.updateProductImage(id, imagePath);
+
+        if (!updatedProduct) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+
+        res.json({ message: 'Image uploaded successfully', product: updatedProduct });
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        res.status(500).json({ error: 'Error uploading image' });
+    }
+});
+
+/*
 //  endpoint para subir una imagen MULTER
 router.post('/upload/:pid', upload.single('image'), (req, res) => {
     const { pid } = req.params; // Obtengo el ID del producto
@@ -66,7 +92,7 @@ router.post('/uploadMultiple', upload.array('images', 5), (req, res) => {
     });
 });
 
-/* obtengo todos los productos
+ obtengo todos los productos
 router.get('/', (req, res) => {
     const limit = parseInt(req.query.limit);  // se agrega un limite de consultas mediante un parseo a entero
     const products = productManager.getProducts(limit);  // obtengo los productos con o sin limite   

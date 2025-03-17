@@ -40,6 +40,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+
+
 // Middleware a nivel de aplicación
 app.use(logger);
 

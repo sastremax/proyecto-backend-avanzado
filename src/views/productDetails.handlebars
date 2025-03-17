@@ -10,3 +10,9 @@
 {{/each}}
 
 <a href="/products/view" class="back-button">Back to products</a>
+
+<h2>Upload Product Image</h2>
+<form action="/products/{{product._id}}/upload" method="POST" enctype="multipart/form-data">
+    <input type="file" name="image" required>
+    <button type="submit">Upload Image</button>
+</form>

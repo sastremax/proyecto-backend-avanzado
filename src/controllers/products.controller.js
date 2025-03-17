@@ -276,4 +276,26 @@ const getProductDetailsView = async (req, res) => {
     }
 };
 
-export default { getProducts, getProductById, addProduct, updateProduct, deleteProduct, seedProducts, getProductsView, getProductDetailsView };
+const updateProductImage = async (id, imagePath) => {
+    try {
+        const product = await Product.findById(id);   // busco el producto por id
+        if (!product) {
+            return null;  // si no lo encuentro retorno null
+        }
+
+        // verifico si el campo "thumbnails" es un array sino lo inicializo
+        if (!Array.isArray(product.thumbnails)) {
+            product.thumbnails = [];
+        }
+
+        product.thumbnails.push(imagePath); // Agrega la imagen al array de thumbnails
+        await product.save();    // guardo los cambios en la base de datos
+
+        return product;// retorno el producto actualizado
+    } catch (error) {
+        console.error('Error updating product image:', error);  // muestro el error en consola
+        return null;
+    }
+};
+
+export default { getProducts, getProductById, addProduct, updateProduct, deleteProduct, seedProducts, getProductsView, getProductDetailsView, updateProductImage };
