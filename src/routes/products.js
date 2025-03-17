@@ -116,6 +116,9 @@ router.get('/', productController.getProducts);
 // obtener la vista con productos paginados en Handlebars (para el navegador)
 router.get('/view', productController.getProductsView);
 
+// obtener la vista con detalle de los productos (para el navegador)
+router.get('/details/:id', productController.getProductDetailsView);
+
 // obtener un producto por ID desde MongoDB (para Postman)
 router.get('/:id', productController.getProductById);
 

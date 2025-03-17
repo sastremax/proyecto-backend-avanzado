@@ -23,7 +23,12 @@ const PORT = 8080;  // puerto 8080
 connectDB();  
 
 // Configuración de Handlebars
-app.engine('handlebars', engine());
+app.engine('handlebars', engine({
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true, // Permite acceder a propiedades del prototipo
+        allowProtoMethodsByDefault: true // (Opcional) Permite acceder a métodos del prototipo
+    }
+}));
 
 app.set('views', path.join(__dirname, 'views'));  // para que express sepa donde estan las vistas
 app.set('view engine', 'handlebars');  // handlebar se la establece como un motor de plantillas

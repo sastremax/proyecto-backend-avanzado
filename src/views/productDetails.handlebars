@@ -1,0 +1,12 @@
+<h1>{{product.title}}</h1>
+
+<p><strong>Description:</strong> {{product.description}}</p>
+<p><strong>Price:</strong> ${{product.price}}</p>
+<p><strong>Category:</strong> {{product.category}}</p>
+<p><strong>Stock:</strong> {{product.stock}}</p>
+
+{{#each product.thumbnails}}
+<img src="{{this}}" alt="Product image" width="200">
+{{/each}}
+
+<a href="/products/view" class="back-button">Back to products</a>

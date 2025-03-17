@@ -249,8 +249,8 @@ const getProductsView = async (req, res) => {
             page: result.page,
             hasPrevPage: result.hasPrevPage,
             hasNextPage: result.hasNextPage,
-            prevLink: result.hasPrevPage ? `/products?page=${result.prevPage}&limit=${limit}` : null,
-            nextLink: result.hasNextPage ? `/products?page=${result.nextPage}&limit=${limit}` : null
+            prevLink: result.hasPrevPage ? `/products/view?page=${result.prevPage}&limit=${limit}` : null,
+            nextLink: result.hasNextPage ? `/products/view?page=${result.nextPage}&limit=${limit}` : null
         });
 
     } catch (error) {
@@ -259,4 +259,21 @@ const getProductsView = async (req, res) => {
     }
 }
 
-export default { getProducts, getProductById, addProduct, updateProduct, deleteProduct, seedProducts, getProductsView };
+const getProductDetailsView = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.id);
+        if (!product) {
+            return res.status(404).render('error', { message: 'Product not found' });
+        }
+
+        res.render('productDetails.handlebars', {
+            layout: "main",
+            product
+        });
+    } catch (error) {
+        console.error('Error rendering product details:', error);
+        res.status(500).send('Error loading product details page');
+    }
+};
+
+export default { getProducts, getProductById, addProduct, updateProduct, deleteProduct, seedProducts, getProductsView, getProductDetailsView };
