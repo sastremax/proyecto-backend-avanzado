@@ -108,7 +108,7 @@ const addProductToCart = async (req, res) => {
 
         await cart.save();   // guardo los cambios en la base de datos
 
-        res.json(cart);  // devuelvo el carrito actualizado
+        return res.json(cart);  // devuelvo el carrito actualizado
 
     } catch (error) {
         console.log('error adding product to cart', error);
