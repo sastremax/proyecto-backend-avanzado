@@ -298,4 +298,14 @@ const updateProductImage = async (id, imagePath) => {
     }
 };
 
-export default { getProducts, getProductById, addProduct, updateProduct, deleteProduct, seedProducts, getProductsView, getProductDetailsView, updateProductImage };
+const getHomeView = async (req, res) => {
+    try {
+        const products = await Product.find(); // obtengo todos los productos de la base de datos
+        res.render('home', { layout: "main", products }); // renderizo la vista de home con los productos
+    } catch (error) {
+        console.error('Error rendering home:', error); // muestro el error en consola
+        res.status(500).send('Error loading home page'); // devuelvo un error 500 si hay problema en la carga
+    }
+};
+
+export default { getProducts, getProductById, addProduct, updateProduct, deleteProduct, seedProducts, getProductsView, getProductDetailsView, updateProductImage, getHomeView };

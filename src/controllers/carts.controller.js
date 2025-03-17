@@ -270,4 +270,24 @@ const updateProductQuantity = async (req, res) => {
     }
 }
 
-export default { getCartById, seedCarts, addProductToCart, removeProductFromCart, deleteCart, createCart, clearCart, updateCart, updateProductQuantity };
+const getCartView = async (req, res) => {
+    try {
+        const { id } = req.params; // obtengo el ID del carrito desde la URL
+
+        // busco el carrito en la base de datos y utilizo populate() para obtener los detalles de los productos
+        const cart = await Cart.findById(id).populate("products.product");
+
+        // si el carrito no existe, devuelvo un error 404 y muestro un mensaje en la vista
+        if (!cart) {
+            return res.status(404).render("error", { message: "Cart not found" });
+        }
+
+        // renderizo la vista del carrito con los productos
+        res.render("cart", { layout: "main", cart });
+    } catch (error) {
+        console.error("Error loading cart view:", error);
+        res.status(500).send("Error loading cart page");
+    }
+};
+
+export default { getCartById, seedCarts, addProductToCart, removeProductFromCart, deleteCart, createCart, clearCart, updateCart, updateProductQuantity, getCartView };

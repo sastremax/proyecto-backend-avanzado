@@ -35,6 +35,9 @@ router.delete('/:id/products/:productId', cartController.removeProductFromCart);
 //elimino un carrito desde mongodb
 router.delete('/:id', cartController.deleteCart);
 
+// obtener la vista del carrito en Handlebars
+router.get('/view/:id', cartController.getCartView);
+
 /*
   creo un carrito nuevo
 router.post('/', (req, res) => {

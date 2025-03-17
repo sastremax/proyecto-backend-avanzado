@@ -69,6 +69,10 @@ io.on('connection', (socket) => {
 });
 
 // configuración de las rutas para la API y vistas
+app.get('/', (req, res) => {
+    res.render('home');
+});
+
 app.use('/api/products', productsRouter);    // API en JSON para productos
 app.use('/api/carts', cartsRouter);  // API en JSON para carritos
 

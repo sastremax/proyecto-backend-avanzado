@@ -136,8 +136,8 @@ router.delete('/:pid', (req, res) => {
 });
 */
 
-// obtener todos los productos en formato JSON (para Postman)
-router.get('/', productController.getProducts);
+// obtener todos los productos en formato JSON (para el navegador)
+router.get('/', productController.getHomeView);
 
 // obtener la vista con productos paginados en Handlebars (para el navegador)
 router.get('/view', productController.getProductsView);
