@@ -10,6 +10,8 @@ import { engine } from 'express-handlebars'; // importo el motor de plantillas h
 import http from 'http';  // para crear el servidor HTTP
 import { Server as SocketIOServer } from 'socket.io'; // para la conexion de WEBSOCKET
 import connectDB from './config/database.js';  // conexion a MongoDB
+import productController from './controllers/products.controller.js';
+import Cart from './models/Cart.model.js';  // importo el modelo de carritos
 
 // hay que inicializar
 const app = express(); // a partir de aqui app tendra todas las funcionalidades de express
@@ -27,6 +29,12 @@ app.engine('handlebars', engine({
     runtimeOptions: {
         allowProtoPropertiesByDefault: true, // Permite acceder a propiedades del prototipo
         allowProtoMethodsByDefault: true // (Opcional) Permite acceder a métodos del prototipo
+    },
+    helpers: {
+        multiply: (a, b) => a * b,  // Multiplica el precio por la cantidad
+        calculateTotal: (products) => {
+            return products.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+        }
     }
 }));
 
@@ -40,7 +48,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Middleware para obtener un carrito por defecto si no existe
+app.use(async (req, res, next) => {
+    try {
+        let cart = await Cart.findOne(); // Busco cualquier carrito en la BD
 
+        // Si no existe un carrito, creo uno vacío
+        if (!cart) {
+            cart = new Cart({ products: [] });
+            await cart.save();
+        }
+
+        res.locals.cartId = cart._id.toString(); // Hago el ID accesible en Handlebars
+        next();
+    } catch (error) {
+        console.error("Error setting cartId:", error);
+        next();
+    }
+});
 
 // Middleware a nivel de aplicación
 app.use(logger);
@@ -69,9 +94,7 @@ io.on('connection', (socket) => {
 });
 
 // configuración de las rutas para la API y vistas
-app.get('/', (req, res) => {
-    res.render('home');
-});
+app.get('/', productController.getHomeView);
 
 app.use('/api/products', productsRouter);    // API en JSON para productos
 app.use('/api/carts', cartsRouter);  // API en JSON para carritos
@@ -80,12 +103,10 @@ app.use('/api/carts', cartsRouter);  // API en JSON para carritos
 app.use('/products', productsRouter);
 
 // Middleware para manejar rutas no encontradas
-app.use((req, res, next) => {
+app.use((req, res) => {
     console.log(`Ruta no encontrada: ${req.method} ${req.url}`);  // Muestra en la terminal
-    res.status(404).json({
-        success: false,
-        message: "Not Found"
-    });
+    res.status(404).render(
+        'notFound', { layout: "main" });
 });
 
 // Middleware de manejo de errores

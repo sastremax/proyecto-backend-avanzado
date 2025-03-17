@@ -20,9 +20,7 @@
                 <td>{{this.quantity}}</td>
                 <td>${{multiply this.product.price this.quantity}}</td>
                 <td>
-                    <form action="/cart/{{../cart._id}}/remove/{{this.product._id}}" method="POST">
-                        <button type="submit">Remove</button>
-                    </form>
+                    <button onclick="removeFromCart('{{../cart._id}}', '{{this.product._id}}')">Remove</button>
                 </td>
             </tr>
             {{/each}}
@@ -31,8 +29,24 @@
 
     <p><strong>Total: ${{calculateTotal cart.products}}</strong></p>
     {{else}}
-    <p>Your cart is empty.</p>
+    <div class="empty-cart">
+        <h3>Your cart is empty</h3>
+        <p>It looks like you haven't added any products yet.</p>
+        <a href="/products/view" class="back-button">Browse Products</a>
+    </div>
     {{/if}}
-
-    <a href="/" class="back-button">Continue Shopping</a>
 </main>
+
+<script>
+    function removeFromCart(cartId, productId) {
+        fetch(`/api/carts/${cartId}/products/${productId}`, {
+            method: 'DELETE'
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Product removed:', data);
+                location.reload(); // Recargar la página para actualizar la vista
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
