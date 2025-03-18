@@ -31,6 +31,7 @@ app.engine('handlebars', engine({
         allowProtoMethodsByDefault: true // (Opcional) Permite acceder a métodos del prototipo
     },
     helpers: {
+        eq: (a, b) => a === b,  // Compara dos valores
         multiply: (a, b) => a * b,  // Multiplica el precio por la cantidad
         calculateTotal: (products) => {
             return products.reduce((total, item) => total + (item.product.price * item.quantity), 0);

@@ -215,31 +215,51 @@ const deleteProduct = async (req,res) => {
     }
 }
 
+// Función auxiliar para construir filtros de búsqueda
+const parseFilters = (req) => {
+    let filter = {};
+
+    if (req.query.query) {
+        const queryParts = req.query.query.split(':');
+        if (queryParts.length === 2) {
+            const [key, value] = queryParts;
+            filter[key] = key === "status" ? value : { $regex: value, $options: "i" };
+        }
+    }
+
+    if (req.query.availability) {
+        if (req.query.availability === "available") {
+            filter.stock = { $gt: 0 }; // Productos con stock mayor a 0
+        } else if (req.query.availability === "unavailable") {
+            filter.stock = 0; // Productos sin stock
+        }
+    }
+
+    if (req.query.minPrice || req.query.maxPrice) {
+        filter.price = {};
+        if (req.query.minPrice) filter.price.$gte = parseFloat(req.query.minPrice);
+        if (req.query.maxPrice) filter.price.$lte = parseFloat(req.query.maxPrice);
+    }
+
+    return filter;
+};
+
+// Función auxiliar para construir las opciones de paginación
+const getPaginationOptions = (req) => ({
+    page: parseInt(req.query.page) || 1,
+    limit: parseInt(req.query.limit) || 5,
+    sort: req.query.sort && (req.query.sort === "asc" || req.query.sort === "desc")
+        ? { price: req.query.sort === "asc" ? 1 : -1 }
+        : undefined
+});
+
 const getProductsView = async (req, res) => {
     try {
-        const { limit = 5, page = 1, sort, query } = req.query;
+        const filter = parseFilters(req);  // Aplico los filtros
+        const options = getPaginationOptions(req);  // Obtengo las opciones de paginación
 
-        // filtro basado en la query
-        let filter = {};
-        if (query) {
-            const queryParts = query.split(':');
-            if (queryParts.length === 2) {
-                const [ key, value] = queryParts;
-                filter[key] = { $regex: value, $options: "i" };
-            }
-        }
-
-        // configuro la paginacion
-        const options = {
-            page: parseInt(page),
-            limit: parseInt(limit),
-            sort: sort && (sort === "asc" || sort === "desc") ? { price: sort === "asc" ? 1 : -1 } : undefined
-        };
-
-        // realizo la consulta con paginacion y filtros
         const result = await Product.paginate(filter, options);
 
-        // renderizo la vista de productos con la paginacion
         res.render('products.handlebars', {
             layout: "main",
             products: result.docs,
@@ -249,8 +269,14 @@ const getProductsView = async (req, res) => {
             page: result.page,
             hasPrevPage: result.hasPrevPage,
             hasNextPage: result.hasNextPage,
-            prevLink: result.hasPrevPage ? `/products/view?page=${result.prevPage}&limit=${limit}` : null,
-            nextLink: result.hasNextPage ? `/products/view?page=${result.nextPage}&limit=${limit}` : null
+            prevLink: result.hasPrevPage ? `/products/view?page=${result.prevPage}&limit=${options.limit}&query=${req.query.query || ''}&sort=${req.query.sort || ''}&minPrice=${req.query.minPrice || ''}&maxPrice=${req.query.maxPrice || ''}&availability=${req.query.availability || ''}` : null,
+            nextLink: result.hasNextPage ? `/products/view?page=${result.nextPage}&limit=${options.limit}&query=${req.query.query || ''}&sort=${req.query.sort || ''}&minPrice=${req.query.minPrice || ''}&maxPrice=${req.query.maxPrice || ''}&availability=${req.query.availability || ''}` : null,
+            query: req.query.query,
+            query: req.query.query || '',
+            sort: req.query.sort || '',
+            minPrice: req.query.minPrice || '',
+            maxPrice: req.query.maxPrice || '',
+            availability: req.query.availability || ''
         });
 
     } catch (error) {

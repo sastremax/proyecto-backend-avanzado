@@ -1,5 +1,40 @@
 <h1>Product List</h1>
 
+<form action="/products/view" method="GET">
+    <label for="category">Category:</label>
+    <select name="query" id="category">
+        <option value="">All</option>
+        <option value="category:tv" {{#if (eq query "category:tv" )}}selected{{/if}}>TV</option>
+        <option value="category:phone" {{#if (eq query "category:phone" )}}selected{{/if}}>Phones</option>
+        <option value="category:refrigeracion" {{#if (eq query "category:refrigeracion" )}}selected{{/if}}>Refrigeration
+        </option>
+        <option value="category:climatizacion" {{#if (eq query "category:climatizacion" )}}selected{{/if}}>Climatization
+        </option>
+    </select>
+
+    <label for="sort">Sort by Price:</label>
+    <select name="sort" id="sort">
+        <option value="">None</option>
+        <option value="asc" {{#if (eq sort "asc" )}}selected{{/if}}>Low to High</option>
+        <option value="desc" {{#if (eq sort "desc" )}}selected{{/if}}>High to Low</option>
+    </select>
+
+    <label for="availability">Availability:</label>
+    <select name="availability" id="availability">
+        <option value="">All</option>
+        <option value="available" {{#if (eq availability "available" )}}selected{{/if}}>In Stock</option>
+        <option value="unavailable" {{#if (eq availability "unavailable" )}}selected{{/if}}>Out of Stock</option>
+    </select>
+
+    <label for="minPrice">Min Price:</label>
+    <input type="number" name="minPrice" id="minPrice" value="{{minPrice}}" placeholder="0">
+    
+    <label for="maxPrice">Max Price:</label>
+    <input type="number" name="maxPrice" id="maxPrice" value="{{maxPrice}}" placeholder="1000000">
+
+    <button type="submit">Apply Filters</button>
+</form>
+
 <table>
     <thead>
         <tr>
