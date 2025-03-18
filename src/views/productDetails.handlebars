@@ -5,19 +5,23 @@
 <p><strong>Category:</strong> {{product.category}}</p>
 <p><strong>Stock:</strong> {{product.stock}}</p>
 
-{{#each product.thumbnails}}
-<img src="{{this}}" alt="Product image" width="200">
-{{/each}}
+{{#if product.thumbnails.length}}
+    {{#each product.thumbnails}}
+        <img src="/img/{{this}}" alt="Product image" width="200">
+    {{/each}}
+{{else}}
+    <img src="/img/default-placeholder.webp" alt="No image available" width="200">
+{{/if}}
 
 <h2>Add to Cart</h2>
-<form action="/cart/{{cartId}}/add/{{product._id}}" method="POST">
+<form action="/api/carts/{{cartId}}/products/{{product._id}}" method="POST">
     <label for="quantity">Quantity:</label>
     <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{product.stock}}" required>
     <button type="submit">Add to Cart</button>
 </form>
 
 <h2>Remove from Cart</h2>
-<form action="/cart/{{cartId}}/remove/{{product._id}}" method="POST">
+<form onsubmit="event.preventDefault(); removeFromCart('{{cartId}}', '{{product._id}}')">
     <button type="submit" class="delete-button">Remove from Cart</button>
 </form>
 
@@ -28,3 +32,21 @@
     <input type="file" name="image" required>
     <button type="submit">Upload Image</button>
 </form>
+
+<script>
+    async function removeFromCart(cartId, productId) {
+        try {
+            const response = await fetch(`/cart/${cartId}/products/${productId}`, {
+                method: "DELETE"
+            });
+            if (response.ok) {
+                alert("Product removed from cart!");
+                window.location.reload();
+            } else {
+                alert("Error removing product.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+</script>

@@ -281,13 +281,26 @@ const getCartView = async (req, res) => {
         if (!cart) {
             return res.status(404).render("error", { message: "Cart not found" });
         }
+        console.log("Cart data before rendering:", JSON.stringify(cart, null, 2));
 
         // FILTRO productos nulos antes de enviar a la vista
+        const originalLength = cart.products.length;
         cart.products = cart.products.filter(p => p.product !== null);
+
+        // Si hubo productos nulos eliminados, guardar los cambios en la base de datos
+        if (cart.products.length !== originalLength) {
+            await Cart.updateOne(
+                { _id: id },
+                { $pull: { products: { product: null } } } // Elimina de MongoDB los productos con `null`
+            );
+            console.log('Productos nulos eliminados del carrito en la base de datos');
+        }
+
+        console.log("Cart data before rendering:", JSON.stringify(cart, null, 2));
 
         // renderizo la vista del carrito con los productos
         res.render("cart", { layout: "main", cart });
-        
+
     } catch (error) {
         console.error("Error loading cart view:", error);
         res.status(500).send("Error loading cart page");

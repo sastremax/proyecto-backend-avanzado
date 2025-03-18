@@ -42,8 +42,10 @@ app.engine('handlebars', engine({
 app.set('views', path.join(__dirname, 'views'));  // para que express sepa donde estan las vistas
 app.set('view engine', 'handlebars');  // handlebar se la establece como un motor de plantillas
 
-// para acceder a los archivo estaticos de public
+// para acceder a los archivo estaticos de public e img
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/img', express.static(path.join(__dirname, 'public', 'img')));
+app.use('/css', express.static(path.join(__dirname, 'public', 'css')));
 
 // middleware para analizar datos en formato JSON y urlencoded
 app.use(express.json());
