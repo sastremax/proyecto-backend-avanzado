@@ -5,10 +5,16 @@
 <p><strong>Category:</strong> {{product.category}}</p>
 <p><strong>Stock:</strong> {{product.stock}}</p>
 
-{{#if product.thumbnails.length}}
-    {{#each product.thumbnails}}
-        <img src="/img/{{this}}" alt="Product image" width="200">
-    {{/each}}
+{{#if product.thumbnails}}
+    {{#if product.thumbnails.length}}
+        {{#each product.thumbnails}}
+            {{#if this}}
+                <img src="/img/{{this}}" alt="Product image" width="200">
+            {{/if}}
+        {{/each}}
+    {{else}}
+        <img src="/img/default-placeholder.webp" alt="No image available" width="200">
+    {{/if}}
 {{else}}
     <img src="/img/default-placeholder.webp" alt="No image available" width="200">
 {{/if}}

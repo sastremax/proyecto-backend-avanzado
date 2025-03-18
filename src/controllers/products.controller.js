@@ -79,7 +79,7 @@ const seedProducts = async (req, res) => {
 const getProducts = async (req, res) => {
     try {
         // obtengo los parámetros de consulta con valores por defecto
-        const limit = isNaN(req.query.limit) ? 5 : parseInt(req.query.limit);
+        const limit = isNaN(req.query.limit) ? 10 : parseInt(req.query.limit);
         const page = isNaN(req.query.page) ? 1 : parseInt(req.query.page);
         const { sort, query } = req.query;
 
@@ -247,7 +247,7 @@ const parseFilters = (req) => {
 // Función auxiliar para construir las opciones de paginación
 const getPaginationOptions = (req) => ({
     page: parseInt(req.query.page) || 1,
-    limit: parseInt(req.query.limit) || 5,
+    limit: parseInt(req.query.limit) || 10,
     sort: req.query.sort && (req.query.sort === "asc" || req.query.sort === "desc")
         ? { price: req.query.sort === "asc" ? 1 : -1 }
         : undefined

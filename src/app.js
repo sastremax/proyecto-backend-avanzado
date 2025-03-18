@@ -44,7 +44,7 @@ app.set('view engine', 'handlebars');  // handlebar se la establece como un moto
 
 // para acceder a los archivo estaticos de public e img
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/img', express.static(path.join(__dirname, 'public', 'img')));
+app.use('/img', express.static(path.resolve(__dirname, 'public', 'img')));
 app.use('/css', express.static(path.join(__dirname, 'public', 'css')));
 
 // middleware para analizar datos en formato JSON y urlencoded
