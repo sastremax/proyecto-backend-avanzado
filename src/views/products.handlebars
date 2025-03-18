@@ -26,13 +26,16 @@
         <option value="unavailable" {{#if (eq availability "unavailable" )}}selected{{/if}}>Out of Stock</option>
     </select>
 
-    <label for="minPrice">Min Price:</label>
-    <input type="number" name="minPrice" id="minPrice" value="{{minPrice}}" placeholder="0">
+    <div class="filters-container">
+        <label for="minPrice">Min Price:</label>
+        <input type="number" name="minPrice" id="minPrice" value="{{minPrice}}" placeholder="0">
+        
+        <label for="maxPrice">Max Price:</label>
+        <input type="number" name="maxPrice" id="maxPrice" value="{{maxPrice}}" placeholder="1000000">
+        
+        <button type="submit">Apply Filters</button>
+    </div>
     
-    <label for="maxPrice">Max Price:</label>
-    <input type="number" name="maxPrice" id="maxPrice" value="{{maxPrice}}" placeholder="1000000">
-
-    <button type="submit">Apply Filters</button>
 </form>
 
 <table>
@@ -49,6 +52,13 @@
     <tbody>
         {{#each products}}
         <tr>
+            <td>
+                {{#if this.thumbnails.length}}
+                <img src="/img/{{this.thumbnails.[0]}}" alt="{{this.title}}" width="100">
+                {{else}}
+                <img src="/img/default-placeholder.webp" alt="No image available" width="100">
+                {{/if}}
+            </td>
             <td>{{this.title}}</td>
             <td>{{this.description}}</td>
             <td>${{this.price}}</td>
@@ -56,6 +66,9 @@
             <td>{{this.stock}}</td>
             <td>
                 <a href="/products/details/{{this._id}}">View details</a>
+                <form action="/cart/add/{{this._id}}" method="POST">
+                    <button type="submit">Add to Cart</button>
+                </form>
             </td>
         </tr>
         {{/each}}

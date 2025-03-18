@@ -27,7 +27,10 @@
         </tbody>
     </table>
 
-    <p><strong>Total: ${{calculateTotal cart.products}}</strong></p>
+    <div class="cart-total-container">
+        <p><strong>Total: ${{calculateTotal cart.products}}</strong></p>
+    </div>
+    
     {{else}}
     <div class="empty-cart">
         <h3>Your cart is empty</h3>

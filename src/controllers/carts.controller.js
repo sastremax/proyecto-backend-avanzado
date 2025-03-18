@@ -108,7 +108,7 @@ const addProductToCart = async (req, res) => {
 
         await cart.save();   // guardo los cambios en la base de datos
 
-        return res.json(cart);  // devuelvo el carrito actualizado
+        res.redirect(`/cart/view/${id}`);;  // devuelvo el carrito actualizado
 
     } catch (error) {
         console.log('error adding product to cart', error);
@@ -282,8 +282,12 @@ const getCartView = async (req, res) => {
             return res.status(404).render("error", { message: "Cart not found" });
         }
 
+        // FILTRO productos nulos antes de enviar a la vista
+        cart.products = cart.products.filter(p => p.product !== null);
+
         // renderizo la vista del carrito con los productos
         res.render("cart", { layout: "main", cart });
+        
     } catch (error) {
         console.error("Error loading cart view:", error);
         res.status(500).send("Error loading cart page");
