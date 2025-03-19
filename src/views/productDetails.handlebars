@@ -18,7 +18,7 @@
 {{/if}}
 
 <h2>Add to Cart</h2>
-<form action="/api/carts/{{cartId}}/products/{{product._id}}" method="POST">
+<form id="addToCartForm">
     <label for="quantity">Quantity:</label>
     <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{product.stock}}" required>
     <button type="submit" class="styled-button">Add to Cart</button>
@@ -40,6 +40,47 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
+    document.getElementById("addToCartForm").addEventListener("submit", async function (event) {
+            event.preventDefault(); // previene la recarga de la página
+
+            const cartId = "{{cartId}}";
+            const productId = "{{product._id}}";
+            const quantity = document.getElementById("quantity").value;
+
+            try {
+                const response = await fetch(`/api/carts/${cartId}/products/${productId}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ quantity: parseInt(quantity) })
+                });
+
+                console.log("Response Status:", response.status);
+                const responseData = await response.json(); // intenta obtener el JSON de la respuesta
+                console.log("API Response:", responseData); // muestra la respuesta en la consola del navegador
+
+                if (response.ok) {
+                    Swal.fire({
+                        title: "Success!",
+                        text: responseData.message || "Product added to cart successfully!",
+                        icon: "success",
+                        confirmButtonText: "OK"
+                    }).then(() => {
+                        window.location.href = `/carts/view/${cartId}`; // redirige al carrito
+                    });
+                } else {
+                    console.error("Fetch Response Error:", responseData);
+                    Swal.fire({
+                        title: "Error",
+                        text: responseData.error || "Could not add product to cart.",
+                        icon: "error",
+                        confirmButtonText: "OK"
+                    });
+                }
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                Swal.fire("Error", "Something went wrong.", "error");
+            }
+    });
 
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('success')) {

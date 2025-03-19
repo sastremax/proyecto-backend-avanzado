@@ -100,7 +100,9 @@ io.on('connection', (socket) => {
 app.get('/', productController.getHomeView);
 
 app.use('/api/products', productsRouter);    // API en JSON para productos
+
 app.use('/api/carts', cartsRouter);  // API en JSON para carritos
+app.use('/carts', cartsRouter);
 
 // configuración de las vistas de handlebars
 app.use('/products', productsRouter);
