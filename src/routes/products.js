@@ -114,6 +114,7 @@ router.delete('/:pid', (req, res) => {
 });
 */
 
+
 // obtener todos los productos en formato JSON (para el navegador)
 router.get('/', productController.getHomeView);
 
@@ -123,17 +124,28 @@ router.get('/view', productController.getProductsView);
 // obtener la vista con detalle de los productos (para el navegador)
 router.get('/details/:id', productController.getProductDetailsView);
 
+// modificar un producto desde el navegador
+router.post('/update/:id', productController.updateProductView);
+
+// Eliminar un producto desde el navegador
+router.post('/delete/:id', productController.deleteProductView);
+
+
+//rutas para la API
+// obtener productos en formato JSON (para Postman)
+router.get('/api/products', productController.getProducts);
+
 // obtener un producto por ID desde MongoDB (para Postman)
-router.get('/:id', productController.getProductById);
+router.get('/api/:id', productController.getProductById);
 
 // agregar un producto a la base de datos (para Postman)
-router.post('/', productController.addProduct);
+router.post('/api', productController.addProduct);
 
 // actualizar un producto ya existente (para Postman)
-router.put('/:id', productController.updateProduct);
+router.put('/api/:id', productController.updateProduct);
 
 // eliminar un producto (para Postman)
-router.delete('/:id', productController.deleteProduct);
+router.delete('/api/:id', productController.deleteProduct);
 
 // agrego una ruta para insertar productos de prueba en la base de datos (para Postman)
 router.post('/seed', productController.seedProducts);

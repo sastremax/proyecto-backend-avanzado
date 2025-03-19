@@ -194,6 +194,31 @@ const updateProduct = async (req, res) => {
     }
 }
 
+const updateProductView = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updateFields = req.body;
+
+        if (Object.keys(updateFields).length === 0) {
+            return res.status(400).send("No fields provided for update.");
+        }
+
+        // Busco y actualizo el producto en la base de datos
+        const updatedProduct = await Product.findByIdAndUpdate(id, updateFields, { new: true });
+
+        if (!updatedProduct) {
+            return res.status(404).send("Product not found.");
+        }
+
+        // Redirigir con un parámetro de éxito
+        res.redirect(`/products/details/${id}?success=2`);
+
+    } catch (error) {
+        console.error("Error updating product:", error);
+        res.status(500).send("Error updating product.");
+    }
+};
+
 // elimino un producto de la base de datos
 const deleteProduct = async (req,res) => {
     try {
@@ -214,6 +239,27 @@ const deleteProduct = async (req,res) => {
         res.status(500).json({ error: 'error deleting product' }); // devuelvo un error 500
     }
 }
+
+// eliminar un producto desde el navegador
+const deleteProductView = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Busco y elimino el producto en la base de datos
+        const deletedProduct = await Product.findByIdAndDelete(id);
+
+        // Si el producto no existe, devuelvo un error 404
+        if (!deletedProduct) {
+            return res.status(404).send("Product not found.");
+        }
+
+        // Redirigir a la lista de productos después de eliminar
+        res.redirect("/products/view");
+    } catch (error) {
+        console.error("Error deleting product:", error);
+        res.status(500).send("Error deleting product.");
+    }
+};
 
 // Función auxiliar para construir filtros de búsqueda
 const parseFilters = (req) => {
@@ -357,4 +403,5 @@ const getHomeView = async (req, res) => {
     }
 };
 
-export default { getProducts, getProductById, addProduct, updateProduct, updateProductImage, deleteProduct, seedProducts, uploadProductImage, getProductsView, getProductDetailsView, getHomeView };
+export default {
+    getProducts, getProductById, addProduct, updateProduct, updateProductView, updateProductImage, deleteProduct, deleteProductView, seedProducts, uploadProductImage, getProductsView, getProductDetailsView, getHomeView };
