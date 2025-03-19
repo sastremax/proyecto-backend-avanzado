@@ -203,8 +203,6 @@ input {
   border-radius: 5px;
 }
 
-
-
 button {
   display: inline-block;
   width: 100%;
@@ -416,4 +414,17 @@ a:hover {
 
 .filters-container button:hover {
     background-color: #0056b3;
+}
+
+.styled-button {
+    width: auto; /* Evita que los botones se estiren */
+    padding: 10px 20px; /* Ajusta el tamaño interno */
+    font-size: 16px; /* Tamaño de letra más equilibrado */
+    border-radius: 5px; /* Bordes redondeados */
+}
+
+.image-container {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
 }

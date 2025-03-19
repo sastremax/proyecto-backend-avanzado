@@ -27,29 +27,7 @@ function addTimestamp(req, res, next) {
 }
 
 // Middleware para subir imagenes
-router.post('/:id/upload', upload.single('image'), async (req, res) => {
-    try {
-        const { id } = req.params; // ID del producto
-        // verifico si se ha subido un archivo sino retorno un error
-        if (!req.file) {
-            return res.status(400).json({ error: 'No image uploaded' });
-        }
-
-        const imagePath = `/img/${req.file.filename}`; // Ruta de la imagen guardada
-
-        // Actualizamos el producto agregando la nueva imagen
-        const updatedProduct = await productController.updateProductImage(id, imagePath);
-
-        if (!updatedProduct) {
-            return res.status(404).json({ error: 'Product not found' });
-        }
-
-        res.json({ message: 'Image uploaded successfully', product: updatedProduct });
-    } catch (error) {
-        console.error('Error uploading image:', error);
-        res.status(500).json({ error: 'Error uploading image' });
-    }
-});
+router.post('/:id/upload', upload.single('image'), productController.uploadProductImage);
 
 /*
 //  endpoint para subir una imagen MULTER

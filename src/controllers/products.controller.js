@@ -271,7 +271,6 @@ const getProductsView = async (req, res) => {
             hasNextPage: result.hasNextPage,
             prevLink: result.hasPrevPage ? `/products/view?page=${result.prevPage}&limit=${options.limit}&query=${req.query.query || ''}&sort=${req.query.sort || ''}&minPrice=${req.query.minPrice || ''}&maxPrice=${req.query.maxPrice || ''}&availability=${req.query.availability || ''}` : null,
             nextLink: result.hasNextPage ? `/products/view?page=${result.nextPage}&limit=${options.limit}&query=${req.query.query || ''}&sort=${req.query.sort || ''}&minPrice=${req.query.minPrice || ''}&maxPrice=${req.query.maxPrice || ''}&availability=${req.query.availability || ''}` : null,
-            query: req.query.query,
             query: req.query.query || '',
             sort: req.query.sort || '',
             minPrice: req.query.minPrice || '',
@@ -302,25 +301,49 @@ const getProductDetailsView = async (req, res) => {
     }
 };
 
+// función que actualiza el producto en la base de datos agregando una imagen
 const updateProductImage = async (id, imagePath) => {
     try {
-        const product = await Product.findById(id);   // busco el producto por id
+        const product = await Product.findById(id); // busco el producto por id
         if (!product) {
-            return null;  // si no lo encuentro retorno null
+            return null; // si no lo encuentro, retorno null
         }
 
-        // verifico si el campo "thumbnails" es un array sino lo inicializo
+        // verifico si "thumbnails" es un array, si no lo inicializo
         if (!Array.isArray(product.thumbnails)) {
             product.thumbnails = [];
         }
 
-        product.thumbnails.push(imagePath); // Agrega la imagen al array de thumbnails
-        await product.save();    // guardo los cambios en la base de datos
+        product.thumbnails.push(imagePath); // agrego la imagen al array de thumbnails
+        await product.save(); // guardo los cambios en la base de datos
 
-        return product;// retorno el producto actualizado
+        return product; // retorno el producto actualizado
     } catch (error) {
-        console.error('Error updating product image:', error);  // muestro el error en consola
+        console.error('error updating product image:', error);
         return null;
+    }
+};
+
+// controlador que maneja la subida de imágenes
+const uploadProductImage = async (req, res) => {
+    try {
+        const { id } = req.params; // obtengo el id del producto
+        if (!req.file) {
+            return res.status(400).send("no image uploaded."); // si no hay imagen, retorno error 400
+        }
+
+        const imagePath = `/img/${req.file.filename}`; // ruta de la imagen subida
+        const product = await updateProductImage(id, imagePath); // llamo a la función que actualiza la imagen
+
+        if (!product) {
+            return res.status(404).send("product not found."); // si no se encuentra el producto, retorno error 404
+        }
+
+        // en vez de devolver json, redirige a la misma página del producto con ?success=1
+        res.redirect(`/products/details/${id}?success=1`);
+    } catch (error) {
+        console.error("error uploading product image:", error);
+        res.status(500).send("error uploading image."); // manejo de errores con código 500
     }
 };
 
@@ -334,4 +357,4 @@ const getHomeView = async (req, res) => {
     }
 };
 
-export default { getProducts, getProductById, addProduct, updateProduct, deleteProduct, seedProducts, getProductsView, getProductDetailsView, updateProductImage, getHomeView };
+export default { getProducts, getProductById, addProduct, updateProduct, updateProductImage, deleteProduct, seedProducts, uploadProductImage, getProductsView, getProductDetailsView, getHomeView };

@@ -5,16 +5,14 @@
 <p><strong>Category:</strong> {{product.category}}</p>
 <p><strong>Stock:</strong> {{product.stock}}</p>
 
-{{#if product.thumbnails}}
-    {{#if product.thumbnails.length}}
-        {{#each product.thumbnails}}
-            {{#if this}}
-                <img src="/img/{{this}}" alt="Product image" width="200">
-            {{/if}}
-        {{/each}}
-    {{else}}
-        <img src="/img/default-placeholder.webp" alt="No image available" width="200">
-    {{/if}}
+{{#if product.thumbnails.length}}
+    {{#each product.thumbnails}}
+        {{#if this}}
+            <div class="image-container">
+                <img src="{{this}}" alt="Product image" width="200">
+            </div>
+        {{/if}}
+    {{/each}}
 {{else}}
     <img src="/img/default-placeholder.webp" alt="No image available" width="200">
 {{/if}}
@@ -23,33 +21,52 @@
 <form action="/api/carts/{{cartId}}/products/{{product._id}}" method="POST">
     <label for="quantity">Quantity:</label>
     <input type="number" name="quantity" id="quantity" value="1" min="1" max="{{product.stock}}" required>
-    <button type="submit">Add to Cart</button>
+    <button type="submit" class="styled-button">Add to Cart</button>
 </form>
 
 <h2>Remove from Cart</h2>
 <form onsubmit="event.preventDefault(); removeFromCart('{{cartId}}', '{{product._id}}')">
-    <button type="submit" class="delete-button">Remove from Cart</button>
+    <button type="submit" class="styled-button">Remove from Cart</button>
 </form>
 
-<a href="/products/view" class="back-button">Back to products</a>
+<a href="/products/view" class="styled-button">Back to products</a>
 
 <h2>Upload Product Image</h2>
 <form action="/products/{{product._id}}/upload" method="POST" enctype="multipart/form-data">
     <input type="file" name="image" required>
-    <button type="submit">Upload Image</button>
+    <button type="submit" class="styled-button">Upload Image</button>
 </form>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
+
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('success')) {
+        Swal.fire({
+            title: "Success!",
+            text: "Image uploaded successfully!",
+            icon: "success",
+            confirmButtonText: "OK"
+        });
+    }
+
     async function removeFromCart(cartId, productId) {
         try {
             const response = await fetch(`/cart/${cartId}/products/${productId}`, {
                 method: "DELETE"
             });
             if (response.ok) {
-                alert("Product removed from cart!");
-                window.location.reload();
+                Swal.fire({
+                    title: "Removed!",
+                    text: "Product removed from cart!",
+                    icon: "success",
+                    confirmButtonText: "OK"
+                }).then(() => {
+                    window.location.reload();
+                });
             } else {
-                alert("Error removing product.");
+                Swal.fire("Error", "Error removing product.", "error");
             }
         } catch (error) {
             console.error("Error:", error);
