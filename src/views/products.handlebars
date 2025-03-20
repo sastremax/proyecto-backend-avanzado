@@ -1,18 +1,16 @@
 <h1>Product List</h1>
 
 <form action="/views/products/view" method="GET">
-    <label for="category">Category:</label>
-    <form action="/views/products/view" method="GET">
-        <label for="category">Category Filter:</label>
-        <select name="category" id="category">
-            <option value="">All</option>
-            {{#each categories}}
-            <option value="{{this}}">{{this}}</option>
-            {{/each}}
-        </select>
-        <button type="submit" class="styled-button">Filter</button>
-    </form>
+    <!-- CATEGORÍA -->
+    <label for="category">Category Filter:</label>
+    <select name="category" id="category">
+        <option value="">All</option>
+        {{#each categories}}
+        <option value="{{this}}" {{#if (eq this ../category)}}selected{{/if}}>{{this}}</option>
+        {{/each}}
+    </select>
 
+    <!-- ORDENAMIENTO -->
     <label for="sort">Sort by Price:</label>
     <select name="sort" id="sort">
         <option value="">None</option>
@@ -20,6 +18,7 @@
         <option value="desc" {{#if (eq sort "desc" )}}selected{{/if}}>High to Low</option>
     </select>
 
+    <!-- DISPONIBILIDAD -->
     <label for="availability">Availability:</label>
     <select name="availability" id="availability">
         <option value="">All</option>
@@ -27,16 +26,17 @@
         <option value="unavailable" {{#if (eq availability "unavailable" )}}selected{{/if}}>Out of Stock</option>
     </select>
 
+    <!-- FILTROS DE PRECIO -->
     <div class="filters-container">
         <label for="minPrice">Min Price:</label>
         <input type="number" name="minPrice" id="minPrice" value="{{minPrice}}" placeholder="0">
-        
+
         <label for="maxPrice">Max Price:</label>
         <input type="number" name="maxPrice" id="maxPrice" value="{{maxPrice}}" placeholder="1000000">
-        
-        <button type="submit" class="styled-button">Apply Filters</button>
     </div>
-    
+
+    <!-- BOTÓN QUE CONSERVA TODOS LOS FILTROS -->
+    <button type="submit" class="styled-button">Apply Filters</button>
 </form>
 
 <table>
