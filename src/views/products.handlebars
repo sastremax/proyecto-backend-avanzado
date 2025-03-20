@@ -1,16 +1,17 @@
 <h1>Product List</h1>
 
-<form action="/products/view" method="GET">
+<form action="/views/products/view" method="GET">
     <label for="category">Category:</label>
-    <select name="query" id="category">
-        <option value="">All</option>
-        <option value="category:tv" {{#if (eq query "category:tv" )}}selected{{/if}}>TV</option>
-        <option value="category:phone" {{#if (eq query "category:phone" )}}selected{{/if}}>Phones</option>
-        <option value="category:refrigeracion" {{#if (eq query "category:refrigeracion" )}}selected{{/if}}>Refrigeration
-        </option>
-        <option value="category:climatizacion" {{#if (eq query "category:climatizacion" )}}selected{{/if}}>Climatization
-        </option>
-    </select>
+    <form action="/views/products/view" method="GET">
+        <label for="category">Category Filter:</label>
+        <select name="category" id="category">
+            <option value="">All</option>
+            {{#each categories}}
+            <option value="{{this}}">{{this}}</option>
+            {{/each}}
+        </select>
+        <button type="submit" class="styled-button">Filter</button>
+    </form>
 
     <label for="sort">Sort by Price:</label>
     <select name="sort" id="sort">
@@ -33,7 +34,7 @@
         <label for="maxPrice">Max Price:</label>
         <input type="number" name="maxPrice" id="maxPrice" value="{{maxPrice}}" placeholder="1000000">
         
-        <button type="submit">Apply Filters</button>
+        <button type="submit" class="styled-button">Apply Filters</button>
     </div>
     
 </form>
@@ -58,7 +59,7 @@
             <td>{{this.category}}</td>
             <td>{{this.stock}}</td>
             <td>
-                <a href="/products/details/{{this._id}}">View details</a>                
+                <a href="/views/products/details/{{this._id}}">View details</a>                
             </td>
         </tr>
         {{/each}}

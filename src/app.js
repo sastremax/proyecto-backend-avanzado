@@ -6,19 +6,17 @@ import logger from './middlewares/logger.js';   // Importo el middleware
 import errorHandler from './middlewares/errorHandler.js';   // Importo el middleware de manejo de errores
 import __dirname from './utils.js';    // Importo __dirname desde utils.js
 import { engine } from 'express-handlebars'; // importo el motor de plantillas handlebarsa
-// import fs from 'fs';  // importo fs para leer archivos
 import http from 'http';  // para crear el servidor HTTP
 import { Server as SocketIOServer } from 'socket.io'; // para la conexion de WEBSOCKET
 import connectDB from './config/database.js';  // conexion a MongoDB
-import productController from './controllers/products.controller.js';
+import { getHomeView } from './controllers/products.controller.js';
 import Cart from './models/Cart.model.js';  // importo el modelo de carritos
+import viewsRouter from './routes/views.router.js';
 
 // hay que inicializar
 const app = express(); // a partir de aqui app tendra todas las funcionalidades de express
-
 const server = http.createServer(app);   // creo el servidor http con express
 const io = new SocketIOServer(server);  // creo la conexion de socket.io con el servidor http
-
 const PORT = 8080;  // puerto 8080
 
 // conexion a MongoDB
@@ -42,14 +40,15 @@ app.engine('handlebars', engine({
 app.set('views', path.join(__dirname, 'views'));  // para que express sepa donde estan las vistas
 app.set('view engine', 'handlebars');  // handlebar se la establece como un motor de plantillas
 
+// middleware para analizar datos en formato JSON y urlencoded
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(logger);
+
 // para acceder a los archivo estaticos de public e img
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/img', express.static(path.resolve(__dirname, 'public', 'img')));
 app.use('/css', express.static(path.join(__dirname, 'public', 'css')));
-
-// middleware para analizar datos en formato JSON y urlencoded
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 // Middleware para obtener un carrito por defecto si no existe
 app.use(async (req, res, next) => {
@@ -69,9 +68,6 @@ app.use(async (req, res, next) => {
         next();
     }
 });
-
-// Middleware a nivel de aplicación
-app.use(logger);
 
 // configuracion de websockets con socket.io
 io.on('connection', (socket) => {
@@ -96,16 +92,16 @@ io.on('connection', (socket) => {
     });
 });
 
-// configuración de las rutas para la API y vistas
-app.get('/', productController.getHomeView);
 
+// Rutas de la API (JSON para Postman)
 app.use('/api/products', productsRouter);    // API en JSON para productos
-
 app.use('/api/carts', cartsRouter);  // API en JSON para carritos
-app.use('/carts', cartsRouter);
 
-// configuración de las vistas de handlebars
-app.use('/products', productsRouter);
+// Rutas de vistas (para el navegador)
+app.use('/views', viewsRouter);
+
+// PAGINA PRINCIPAL
+app.get('/', getHomeView);
 
 // Middleware para manejar rutas no encontradas
 app.use((req, res) => {

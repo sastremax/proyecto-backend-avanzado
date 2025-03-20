@@ -1,6 +1,19 @@
 import express from 'express';
 import upload from '../middlewares/multer.js';
-import productController from '../controllers/products.controller.js';
+import {
+    getProducts,
+    getProductById,
+    addProduct,
+    updateProduct,
+    updateProductView,
+    updateProductImage,
+    deleteProduct,
+    deleteProductView,
+    seedProducts,
+    uploadProductImage,
+    getProductDetailsView,
+    getHomeView
+} from '../controllers/products.controller.js';
 
 // creo una instancia del router
 const router = express.Router();
@@ -26,128 +39,18 @@ function addTimestamp(req, res, next) {
     next();
 }
 
-// Middleware para subir imagenes
-router.post('/:id/upload', upload.single('image'), productController.uploadProductImage);
-
-/*
-//  endpoint para subir una imagen MULTER
-router.post('/upload/:pid', upload.single('image'), (req, res) => {
-    const { pid } = req.params; // Obtengo el ID del producto
-
-    // Si no se sube ningún archivo, retorno un error
-    if (!req.file) {
-        return res.status(400).json({ error: 'No image uploaded' });
-    }
-
-    // busco el producto por ID
-    const product = productManager.getProductById(pid);
-    if (!product) {
-        return res.status(404).json({ error: 'Product not found' });
-    }
-
-    // agrego la imagen al array thumnbails
-    const imagePath = `/img/${req.file.filename}`; // Ruta donde se guardó la imagen
-    if (!product.thumbnails) {
-        product.thumbnails = []; // Si no existe, inicializo el array
-    }
-    product.thumbnails.push(imagePath); // Agrego la nueva imagen
-
-    // guardo el producto actualizado
-    productManager.updateProduct(pid, product);
-
-    // Si la imagen se sube correctamente, retorno un mensaje con el nombre del archivo
-    res.json({ message: 'Image uploaded and added to product', product });
-});
-
-// enpoint para subir multiples imagenes MULTER
-router.post('/uploadMultiple', upload.array('images', 5), (req, res) => {
-    if (!req.files || req.files.length === 0) {
-        return res.status(400).json({ error: 'No images uploaded' });
-    }
-    res.json({
-        message: 'Images uploaded successfully',
-        filenames: req.files.map(file => file.filename),
-    });
-});
-
- obtengo todos los productos
-router.get('/', (req, res) => {
-    const limit = parseInt(req.query.limit);  // se agrega un limite de consultas mediante un parseo a entero
-    const products = productManager.getProducts(limit);  // obtengo los productos con o sin limite   
-    res.json(products);  // Respondo con la lista de todos los productos en formato JSON
-});
-
-obtengo un producto por ID
-router.get('/:pid', (req, res) => {
-    const product = productManager.getProductById(req.params.pid);  // Busco el producto con el ID que llega en los parámetros
-
-    if (!product) {  //  Si no lo encuentro al producto
-        res.status(404).send('Product not found');  //  el resultado sera un error
-    }
-    res.json(product);  // si lo encuentro devuelvo un JSON del producto
-});
-
-agregar un producto nuevo
-router.post('/', (req, res) => {
-    const newProduct = productManager.addProduct(req.body);  // agrego un producto nuevo
-    res.status(201).json(newProduct); //  da como resultado un 201
-});
-
-Actualizar un producto ya existente
-router.put('/:pid', (req, res) => {
-    const updatedProduct = productManager.updateProduct(req.params.pid, req.body); // actualizo el producto
-
-    if (!updatedProduct) {
-        return res.status(404).send('Product not found');  // da como resultado un 404
-    }
-    res.json(updatedProduct); // envio el producto actualizado    
-});
-
-Eliminar un producto
-router.delete('/:pid', (req, res) => {
-    const deleted = productManager.deleteProduct(req.params.pid); //  elimino el prodcuto
-
-    if (!deleted) {
-        return res.status(404).send('Product not found');   // si nmo existe da como resultado un 404
-    }
-    res.status(204).send('No content');  // da como resultado un 204 no content
-});
-*/
-
-
-// obtener todos los productos en formato JSON (para el navegador)
-router.get('/', productController.getHomeView);
-
-// obtener la vista con productos paginados en Handlebars (para el navegador)
-router.get('/view', productController.getProductsView);
-
-// obtener la vista con detalle de los productos (para el navegador)
-router.get('/details/:id', productController.getProductDetailsView);
-
-// modificar un producto desde el navegador
-router.post('/update/:id', productController.updateProductView);
-
-// Eliminar un producto desde el navegador
-router.post('/delete/:id', productController.deleteProductView);
-
-
 //rutas para la API
-// obtener productos en formato JSON (para Postman)
-router.get('/api/products', productController.getProducts);
+router.get('/api/products', getProducts); // obtener productos en formato JSON (para Postman)
+router.get('/api/products/:id',getProductById);  // obtener un producto por ID desde MongoDB (para Postman)
+router.post('/api/products', addProduct);  // agregar un producto a la base de datos (para Postman)
+router.put('/api/products/:id', updateProduct);  // actualizar un producto ya existente (para Postman)
+router.delete('/api/products/:id', deleteProduct);  // eliminar un producto (para Postman)
+router.post('/api/seed', seedProducts);  // agrego una ruta para insertar productos de prueba en la base de datos (para Postman)
 
-// obtener un producto por ID desde MongoDB (para Postman)
-router.get('/api/:id', productController.getProductById);
+// Middleware para subir imagenes
+router.post('/api/products/:id/upload', upload.single('image'), uploadProductImage); // para la API
 
-// agregar un producto a la base de datos (para Postman)
-router.post('/api', productController.addProduct);
-
-// actualizar un producto ya existente (para Postman)
-router.put('/api/:id', productController.updateProduct);
-
-// eliminar un producto (para Postman)
-router.delete('/api/:id', productController.deleteProduct);
-
-// agrego una ruta para insertar productos de prueba en la base de datos (para Postman)
-router.post('/seed', productController.seedProducts);
+//rutas para el navegador
+router.get('/', getHomeView);  // obtener todos los productos en formato JSON (para el navegador)
 
 export default router;   // exporto el router para que se pueda usar en el archivo principal

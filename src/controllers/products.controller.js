@@ -299,37 +299,6 @@ const getPaginationOptions = (req) => ({
         : undefined
 });
 
-const getProductsView = async (req, res) => {
-    try {
-        const filter = parseFilters(req);  // Aplico los filtros
-        const options = getPaginationOptions(req);  // Obtengo las opciones de paginación
-
-        const result = await Product.paginate(filter, options);
-
-        res.render('products.handlebars', {
-            layout: "main",
-            products: result.docs,
-            totalPages: result.totalPages,
-            prevPage: result.prevPage,
-            nextPage: result.nextPage,
-            page: result.page,
-            hasPrevPage: result.hasPrevPage,
-            hasNextPage: result.hasNextPage,
-            prevLink: result.hasPrevPage ? `/products/view?page=${result.prevPage}&limit=${options.limit}&query=${req.query.query || ''}&sort=${req.query.sort || ''}&minPrice=${req.query.minPrice || ''}&maxPrice=${req.query.maxPrice || ''}&availability=${req.query.availability || ''}` : null,
-            nextLink: result.hasNextPage ? `/products/view?page=${result.nextPage}&limit=${options.limit}&query=${req.query.query || ''}&sort=${req.query.sort || ''}&minPrice=${req.query.minPrice || ''}&maxPrice=${req.query.maxPrice || ''}&availability=${req.query.availability || ''}` : null,
-            query: req.query.query || '',
-            sort: req.query.sort || '',
-            minPrice: req.query.minPrice || '',
-            maxPrice: req.query.maxPrice || '',
-            availability: req.query.availability || ''
-        });
-
-    } catch (error) {
-        console.log('error rendering products:', error);
-        res.status(500).send('error loading products page');
-    }
-}
-
 const getProductDetailsView = async (req, res) => {
     try {
         const product = await Product.findById(req.params.id);
@@ -386,7 +355,7 @@ const uploadProductImage = async (req, res) => {
         }
 
         // en vez de devolver json, redirige a la misma página del producto con ?success=1
-        res.redirect(`/products/details/${id}?success=1`);
+        res.redirect(`/views/products/details/${id}?success=1`);
     } catch (error) {
         console.error("error uploading product image:", error);
         res.status(500).send("error uploading image."); // manejo de errores con código 500
@@ -403,5 +372,19 @@ const getHomeView = async (req, res) => {
     }
 };
 
-export default {
-    getProducts, getProductById, addProduct, updateProduct, updateProductView, updateProductImage, deleteProduct, deleteProductView, seedProducts, uploadProductImage, getProductsView, getProductDetailsView, getHomeView };
+export {
+    getProducts,
+    getProductById,
+    addProduct,
+    updateProduct,
+    updateProductView,
+    updateProductImage,
+    deleteProduct,
+    deleteProductView,
+    seedProducts,
+    uploadProductImage,
+    getProductDetailsView,
+    getHomeView,
+    parseFilters,
+    getPaginationOptions
+};
