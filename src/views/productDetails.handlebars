@@ -87,7 +87,7 @@
                     icon: "success",
                     confirmButtonText: "OK"
                 }).then(() => {
-                    window.location.href = `/carts/view/${cartId}`;
+                    window.location.href = `/views/cart/${cartId}`;
                 });
             } else {
                 console.error("Fetch Response Error:", responseData);
@@ -121,7 +121,7 @@
             if (result.isConfirmed) {
                 try {
                     const response = await fetch(`/products/delete/${productId}`, {
-                        method: "POST"
+                        method: "DELETE"
                     });
 
                     if (response.ok) {
@@ -131,7 +131,7 @@
                             icon: "success",
                             confirmButtonText: "OK"
                         }).then(() => {
-                            window.location.href = "/products/view";
+                            window.location.href = "/views/products/view";
                         });
                     } else {
                         Swal.fire("Error", "Could not delete the product.", "error");

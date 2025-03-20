@@ -40,11 +40,11 @@ function addTimestamp(req, res, next) {
 }
 
 //rutas para la API
-router.get('/api/products', getProducts); // obtener productos en formato JSON (para Postman)
-router.get('/api/products/:id',getProductById);  // obtener un producto por ID desde MongoDB (para Postman)
-router.post('/api/products', addProduct);  // agregar un producto a la base de datos (para Postman)
-router.put('/api/products/:id', updateProduct);  // actualizar un producto ya existente (para Postman)
-router.delete('/api/products/:id', deleteProduct);  // eliminar un producto (para Postman)
+router.get('/', getProducts); // obtener productos en formato JSON (para Postman)
+router.get('/:id',getProductById);  // obtener un producto por ID desde MongoDB (para Postman)
+router.post('/', addProduct);  // agregar un producto a la base de datos (para Postman)
+router.put('/:id', updateProduct);  // actualizar un producto ya existente (para Postman)
+router.delete('/:id', deleteProduct);  // eliminar un producto (para Postman)
 router.post('/api/seed', seedProducts);  // agrego una ruta para insertar productos de prueba en la base de datos (para Postman)
 
 // Middleware para subir imagenes

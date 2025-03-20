@@ -12,6 +12,7 @@ import connectDB from './config/database.js';  // conexion a MongoDB
 import { getHomeView } from './controllers/products.controller.js';
 import Cart from './models/Cart.model.js';  // importo el modelo de carritos
 import viewsRouter from './routes/views.router.js';
+import mongoose from 'mongoose';
 
 // hay que inicializar
 const app = express(); // a partir de aqui app tendra todas las funcionalidades de express
@@ -53,6 +54,10 @@ app.use('/css', express.static(path.join(__dirname, 'public', 'css')));
 // Middleware para obtener un carrito por defecto si no existe
 app.use(async (req, res, next) => {
     try {
+        if (mongoose.connection.readyState !== 1) {
+            console.error("MongoDB disconnected. Skipping cart setup.");
+            return next();
+        }
         let cart = await Cart.findOne(); // Busco cualquier carrito en la BD
 
         // Si no existe un carrito, creo uno vacío

@@ -2,8 +2,7 @@ import { Router } from 'express';
 import Cart from '../models/Cart.model.js';
 import Product from '../models/Product.model.js';
 import multer from 'multer';
-import path from 'path';
-import { parseFilters, getPaginationOptions } from '../controllers/products.controller.js';
+import mongoose from "mongoose";
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -24,7 +23,7 @@ router.get('/cart/:id', async (req, res) => {
         const { id } = req.params;
         const cart = await Cart.findById(id).populate("products.product");
         console.log(cart.products);
-        if (!cart) {
+        if (!cart || !cart.products) {
             return res.status(404).render("error", { message: "Cart not found" });
         }
 
@@ -41,7 +40,11 @@ router.get('/cart/:id', async (req, res) => {
 // vista de productos
 router.get('/products/view', async (req, res) => {
     try {
-        const { category, minPrice, maxPrice, inStock, sort, search } = req.query;
+        if (mongoose.connection.readyState !== 1) {
+            throw new Error("Database connection lost");
+        }
+
+        const { category, minPrice, maxPrice, inStock, sort, search, page = 1, limit = 10 } = req.query;
 
         // Obtener todas las categorías únicas desde MongoDB
         const categories = await Product.distinct("category");
@@ -52,6 +55,7 @@ router.get('/products/view', async (req, res) => {
         if (minPrice) filter.price = { $gte: Number(minPrice) };
         if (maxPrice) filter.price = { ...filter.price, $lte: Number(maxPrice) };
         if (inStock === "true") filter.stock = { $gt: 0 };
+        if (inStock === "false") filter.stock = 0;
         if (search) filter.title = new RegExp(search, "i");
 
         // Opciones de ordenamiento
@@ -60,8 +64,15 @@ router.get('/products/view', async (req, res) => {
         if (sort === "desc") sortOptions.price = -1;
 
         // Consulta con filtros y paginación
-        const options = getPaginationOptions(req);
-        const result = await Product.paginate(filter, { ...options, sort: sortOptions });
+        const options = {
+            page: parseInt(page),
+            limit: parseInt(limit),
+            sort: sortOptions
+        };
+        const result = await Product.paginate(filter, options);
+
+        // Construcción de la query string para mantener los filtros
+        const queryString = `&category=${category || ''}&minPrice=${minPrice || ''}&maxPrice=${maxPrice || ''}&inStock=${inStock || ''}&sort=${sort || ''}&search=${search || ''}`;
 
         res.render("products.handlebars", {
             layout: "main",
@@ -73,8 +84,8 @@ router.get('/products/view', async (req, res) => {
             page: result.page,
             hasPrevPage: result.hasPrevPage,
             hasNextPage: result.hasNextPage,
-            prevLink: result.hasPrevPage ? `/views/products/view?page=${result.prevPage}&limit=${options.limit}` : null,
-            nextLink: result.hasNextPage ? `/views/products/view?page=${result.nextPage}&limit=${options.limit}` : null,
+            prevLink: result.hasPrevPage ? `/views/products/view?page=${result.prevPage}&limit=${limit}${queryString}` : null,
+            nextLink: result.hasNextPage ? `/views/products/view?page=${result.nextPage}&limit=${limit}${queryString}` : null,
         });
     } catch (error) {
         console.log("Error rendering products:", error);
@@ -103,6 +114,10 @@ router.get('/products/details/:id', async (req, res) => {
 // Vista para actualizar un producto desde el navegador
 router.post('/products/update/:id', async (req, res) => {
     try {
+
+        if (mongoose.connection.readyState !== 1) {
+            throw new Error("Database connection lost");
+        }
         const { id } = req.params;
         const updateFields = req.body;
 
