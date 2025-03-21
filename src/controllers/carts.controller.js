@@ -84,30 +84,33 @@ const createCart = async (req, res) => {
 const addProductToCart = async (req, res) => {
     try {
         const { id, productId } = req.params;
+        const { quantity } = req.body;
 
-        // busco el carrito en la base de datos
+        // verifico que la cantidad sea válida, si no es válida asigno 1
+        const qty = parseInt(quantity) > 0 ? parseInt(quantity) : 1;
+
+        // busco el carrito por id
         const cart = await Cart.findById(id);
-        if (!cart) {
-            return res.status(404).json({ error: 'cart not found' });
-        }
-        // verifico si el producto existe
-        const productExists = await Product.findById(productId);
-        if (!productExists) {
-            return res.status(404).json({ error: 'product not found' });
-        }
+        if (!cart) return res.status(404).json({ error: 'cart not found' });
 
-        // busco si el producto ya se encuentra en el carrito
+        // verifico que el producto exista
+        const productExists = await Product.findById(productId);
+        if (!productExists) return res.status(404).json({ error: 'product not found' });
+
+        // busco si el producto ya está en el carrito
         const existingProduct = cart.products.find(p => p.product.toString() === productId);
+
         if (existingProduct) {
-        // si el producto existe entonces incremento la cantidad
-            existingProduct.quantity += 1;
+            // si ya está, le sumo la cantidad enviada
+            existingProduct.quantity += qty;
         } else {
-            // si el producto no está en el carrito entonces asigno 1 de cantidad
-            cart.products.push({ product: productId, quantity: 1 });
+            // si no está, lo agrego con la cantidad enviada
+            cart.products.push({ product: productId, quantity: qty });
         }
 
         await cart.save();   // guardo los cambios en la base de datos
 
+        // devuelvo una respuesta con el carrito actualizado
         res.json({ message: "Product added successfully", cart }); // devuelvo el carrito actualizado
 
     } catch (error) {

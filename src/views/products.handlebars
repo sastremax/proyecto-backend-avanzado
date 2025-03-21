@@ -19,11 +19,11 @@
     </select>
 
     <!-- DISPONIBILIDAD -->
-    <label for="availability">Availability:</label>
-    <select name="availability" id="availability">
+    <label for="inStock">Availability:</label>
+    <select name="inStock" id="inStock">
         <option value="">All</option>
-        <option value="available" {{#if (eq availability "available" )}}selected{{/if}}>In Stock</option>
-        <option value="unavailable" {{#if (eq availability "unavailable" )}}selected{{/if}}>Out of Stock</option>
+        <option value="true" {{#if (eq inStock "true" )}}selected{{/if}}>In Stock</option>
+        <option value="false" {{#if (eq inStock "false" )}}selected{{/if}}>Out of Stock</option>
     </select>
 
     <!-- FILTROS DE PRECIO -->

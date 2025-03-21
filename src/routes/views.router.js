@@ -55,7 +55,7 @@ router.get('/products/view', async (req, res) => {
         if (minPrice) filter.price = { $gte: Number(minPrice) };
         if (maxPrice) filter.price = { ...filter.price, $lte: Number(maxPrice) };
         if (inStock === "true") filter.stock = { $gt: 0 };
-        if (inStock === "false") filter.stock = 0;
+        if (inStock === "false") filter.stock = { $eq: 0 };
         if (search) filter.title = new RegExp(search, "i");
 
         // Opciones de ordenamiento
