@@ -6,102 +6,72 @@ import logger from './middlewares/logger.js';   // Importo el middleware
 import errorHandler from './middlewares/errorHandler.js';   // Importo el middleware de manejo de errores
 import __dirname from './utils.js';    // Importo __dirname desde utils.js
 import { engine } from 'express-handlebars'; // importo el motor de plantillas handlebarsa
-import fs from 'fs';  // importo fs para leer archivos
 import http from 'http';  // para crear el servidor HTTP
 import { Server as SocketIOServer } from 'socket.io'; // para la conexion de WEBSOCKET
+import connectDB from './config/database.js';  // conexion a MongoDB
+import { getHomeView } from './controllers/products.controller.js';
+import Cart from './models/Cart.model.js';  // importo el modelo de carritos
+import viewsRouter from './routes/views.router.js';
+import mongoose from 'mongoose';
 
 // hay que inicializar
 const app = express(); // a partir de aqui app tendra todas las funcionalidades de express
-
 const server = http.createServer(app);   // creo el servidor http con express
 const io = new SocketIOServer(server);  // creo la conexion de socket.io con el servidor http
-
 const PORT = 8080;  // puerto 8080
 
+// conexion a MongoDB
+connectDB();  
+
 // Configuración de Handlebars
-app.engine('handlebars', engine());
+app.engine('handlebars', engine({
+    runtimeOptions: {
+        allowProtoPropertiesByDefault: true, // Permite acceder a propiedades del prototipo
+        allowProtoMethodsByDefault: true // (Opcional) Permite acceder a métodos del prototipo
+    },
+    helpers: {
+        eq: (a, b) => a === b,  // Compara dos valores
+        multiply: (a, b) => a * b,  // Multiplica el precio por la cantidad
+        calculateTotal: (products) => {
+            return products.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+        }
+    }
+}));
 
 app.set('views', path.join(__dirname, 'views'));  // para que express sepa donde estan las vistas
 app.set('view engine', 'handlebars');  // handlebar se la establece como un motor de plantillas
 
-// para acceder a los archivo estaticos de public
-app.use(express.static(path.join(__dirname, 'public')));
-
 // middleware para analizar datos en formato JSON y urlencoded
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Middleware a nivel de aplicación
 app.use(logger);
 
-// rutas para handlebars
-app.get('/products', (req, res) => {   // ruta para mostrar los productos
-    fs.readFile(path.join(__dirname, 'data', 'products.json'), 'utf-8', (err, data) => {  // leo el archivo 'products.json' de la carpeta 'data'
-        if (err) {
-            return res.status(500).json({ error: 'Error reading products data' }); // retorno un 500
+// para acceder a los archivo estaticos de public e img
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/img', express.static(path.resolve(__dirname, 'public', 'img')));
+app.use('/css', express.static(path.join(__dirname, 'public', 'css')));
+
+// Middleware para obtener un carrito por defecto si no existe
+app.use(async (req, res, next) => {
+    try {
+        if (mongoose.connection.readyState !== 1) {
+            console.error("MongoDB disconnected. Skipping cart setup.");
+            return next();
         }
-        const products = JSON.parse(data);  // parseo el contenido de JSON
+        let cart = await Cart.findOne(); // Busco cualquier carrito en la BD
 
-        res.render('home', { products });  // siempre se devuelve un res.render en handlebars: renderizo la vista "home" de los productos
-    });
-});
+        // Si no existe un carrito, creo uno vacío
+        if (!cart) {
+            cart = new Cart({ products: [] });
+            await cart.save();
+        }
 
-// Ruta para agregar un producto (en el backend)
-app.post('/api/products', (req, res) => {
-    const { title, price, description, code, stock, category, thumbnails } = req.body;
-
-    if (!title || !price || !description || !stock || !category) {
-        return res.status(400).json({ error: 'Missing required fields' });
+        res.locals.cartId = cart._id.toString(); // Hago el ID accesible en Handlebars
+        next();
+    } catch (error) {
+        console.error("Error setting cartId:", error);
+        next();
     }
-
-    const newCode = code || 'P' + Date.now();  // genero un codigo unico si no se genera
-    console.log('thumbnails from request:', thumbnails);
-    const newThumbnails = thumbnails || [];   // si no se proporcionan thumbnails se asigna un array vacio
-
-    // leo el archivo de productos
-    fs.readFile(path.join(__dirname, 'data', 'products.json'), 'utf-8', (err, data) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error al leer los productos' });
-        }
-
-        const products = JSON.parse(data);
-        const newId = products.length ? Math.max(...products.map(p => p.id)) + 1 : 1;      // si no hay productos el id comienza en 1
-        const newProduct = {
-            id: newId,
-            title,
-            price: parseFloat(price),
-            description,
-            code: newCode,
-            stock,
-            category,
-            thumbnails: newThumbnails,
-        };    // nuevo producto con id
-
-        products.push(newProduct);   // agrego el producto nuevo
-
-        // guardo el archivo de productos
-        fs.writeFile(path.join(__dirname, 'data', 'products.json'), JSON.stringify(products, null, 2), (err) => {
-            if (err) {
-                return res.status(500).json({ error: 'Error al guardar el producto' });   // en caso de error devuelve un 500
-            }
-
-            console.log('¡Producto agregado con exito');
-            io.emit('newProduct', newProduct);   // emito el producto nuevo pero ahora a todos los clientes conectados
-            res.status(201).json(newProduct);   // retorno un 201
-        });
-    });   
-});
-
-app.get('/realtimeproducts', (req, res) => {   // ruta para mostrar los productos en tiempo real
-    fs.readFile(path.join(__dirname, 'data', 'products.json'), 'utf-8', (err, data) => {  // leo el archivo 'products.json' de la carpeta 'data'
-        if (err) {
-            return res.status(500).json({ error: 'Error reading products data' });  // retorno un 500
-        }
-
-        const products = JSON.parse(data);   // parseo el contenido de JSON
-
-        res.render('realTimeProducts', { products });   // renderizo realtimeproducts a la vista y paso los productos
-    });
 });
 
 // configuracion de websockets con socket.io
@@ -127,17 +97,22 @@ io.on('connection', (socket) => {
     });
 });
 
-// configuración de las rutas para la API
-app.use('/api/products', productsRouter);
-app.use('/api/carts', cartsRouter);
+
+// Rutas de la API (JSON para Postman)
+app.use('/api/products', productsRouter);    // API en JSON para productos
+app.use('/api/carts', cartsRouter);  // API en JSON para carritos
+
+// Rutas de vistas (para el navegador)
+app.use('/views', viewsRouter);
+
+// PAGINA PRINCIPAL
+app.get('/', getHomeView);
 
 // Middleware para manejar rutas no encontradas
-app.use((req, res, next) => {
+app.use((req, res) => {
     console.log(`Ruta no encontrada: ${req.method} ${req.url}`);  // Muestra en la terminal
-    res.status(404).json({
-        success: false,
-        message: "Not Found"
-    });
+    res.status(404).render(
+        'notFound', { layout: "main" });
 });
 
 // Middleware de manejo de errores
